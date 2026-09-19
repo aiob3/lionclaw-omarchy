@@ -116,3 +116,19 @@ no terminal: **NÃO VERIFICADO** neste registro. VM limpa: **NÃO EXECUTADO**.
 As evidências da versão anterior acima descrevem aquela rodada e não são
 ampliadas por este adendo. A versão 1.1.0 distribui a correção e seu procedimento
 de verificação; consulte também as notas da release pública.
+
+## Adendo: primeira instalação com compatibilidade F9 (1.1.1)
+
+A sequência atual tem 10 etapas de execução, incluindo `dictation` depois
+de `menu`. O catálogo do guia/TUI mantém 13 etapas, contando orientação,
+primeiro início e diagnóstico. A correção é oferecida durante a primeira
+instalação quando Voxtype estiver presente; ausência é `NOT_APPLICABLE`,
+com orientação para habilitar voz e repetir a etapa depois. O aplicativo
+continua não sendo aberto automaticamente.
+
+`python3 -m unittest discover -s tests -q`: **38 testes, OK, exit 0**.
+Os testes de fluxo verificam que a instalação chama `dictation`, aplica o
+ajuste com Voxtype presente e registra não aplicabilidade sem escrever a
+configuração quando ele está ausente. São cenários simulados, não instalação
+em VM limpa. A prova real anterior do helper continua limitada à janela
+isolada Electron/XWayland; este adendo não amplia sua homologação visual.

@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parent
 MANIFEST = json.loads((ROOT / 'manifest.json').read_text())
 STEPS = json.loads((ROOT / 'docs' / 'steps.json').read_text())
 SEQUENCE = ['environment', 'packages', 'access', 'node', 'source',
-            'dependencies', 'rebuild', 'build', 'menu']
+            'dependencies', 'rebuild', 'build', 'menu', 'dictation']
 # Comandos existentes são aceitos mesmo quando vieram de mise/bin ou pacote alternativo.
 COMMAND_PACKAGES = {'git': 'git', 'gh': 'github-cli', 'mise': 'mise',
                     'python3': 'python', 'make': 'base-devel', 'gcc': 'base-devel',
@@ -390,9 +390,16 @@ class Installer:
         return 'Configuração e serviço conferidos; teste visual F9 no LionClaw NÃO VERIFICADO.'
 
     def dictation(self):
+        if not shutil.which('voxtype'):
+            detail = ('Voxtype não instalado: LionClaw pode ser usado sem ditado. '
+                      'Após configurar o Voxtype pelo Omarchy, execute --step dictation.')
+            self.report['dictation'] = {'configuration': 'NOT_APPLICABLE', 'visual_f9': 'NOT_VERIFIED'}
+            self.save_report()
+            print('NÃO APLICÁVEL: ' + detail)
+            return {'status': 'NOT_APPLICABLE', 'detail': detail}
         for tool in ('voxtype', 'wl-copy', 'hyprctl', 'systemctl'):
             if not shutil.which(tool):
-                raise InstallError(f'{tool} ausente. Configure o ditado pelo Omarchy antes desta etapa opcional.')
+                raise InstallError(f'{tool} ausente. Configure o ditado pelo Omarchy antes de concluir a compatibilidade F9.')
         version = self.command(['hyprctl', 'version', '-j'], capture=True)
         if not str(json.loads(version.stdout).get('version', '')).lstrip('v').startswith('0.56.'):
             raise InstallError('Colagem validada no Hyprland 0.56; confira compatibilidade antes de adaptar.')
@@ -485,9 +492,12 @@ class Installer:
             row['status'] = 'FAILED'
             self.save_report()
             raise
-        row['status'] = 'PASSED'
+        if isinstance(result, dict) and result.get('status') == 'NOT_APPLICABLE':
+            row.update(result)
+        else:
+            row['status'] = 'PASSED'
         self.save_report()
-        print('Etapa concluída: ' + identifier)
+        print(f"Etapa {identifier}: {row['status']}")
 
     def show_plan(self):
         print(f"LionClaw {MANIFEST['application_version']} · revisão {MANIFEST['commit']}\nDestino: {self.target}")
@@ -496,10 +506,9 @@ class Installer:
 
     def install(self):
         self.show_plan()
-        self.confirm('Executar a sequência até registrar o menu? O aplicativo não será aberto.')
+        self.confirm('Instalar o LionClaw, registrar o menu e configurar a compatibilidade F9? O aplicativo não será aberto.')
         for identifier in SEQUENCE:
             self.step(identifier)
-        print('Se usar F9/Voxtype, execute a etapa opcional: --step dictation.')
 
     def tui(self):
         if not sys.stdin.isatty() or not sys.stdout.isatty():
@@ -529,7 +538,7 @@ class Installer:
                     for i, step in enumerate(STEPS):
                         history = [row for row in self.report['steps'] if row['id'] == step['id']]
                         status = history[-1]['status'] if history else ''
-                        marker = '+' if status == 'PASSED' else '!' if status == 'FAILED' else ' '
+                        marker = '+' if status == 'PASSED' else '!' if status == 'FAILED' else '-' if status == 'NOT_APPLICABLE' else ' '
                         put(i + 3, 2, f"{step['number']:02d}{marker} {step['title'][:27]}", curses.A_REVERSE if i == current else 0)
                     step = STEPS[current]
                     put(3, 37, step['title'], curses.A_BOLD)
@@ -572,7 +581,7 @@ def main(argv=None):
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--check', action='store_true', help='diagnóstico sem provisionar ou gravar relatório')
     group.add_argument('--plan', action='store_true', help='mostrar sequência sem rede ou alterações')
-    group.add_argument('--install', action='store_true', help='executar sequência até o menu')
+    group.add_argument('--install', action='store_true', help='instalar, registrar menu e configurar compatibilidade F9')
     group.add_argument('--step', choices=[s['id'] for s in STEPS], help='executar apenas uma etapa')
     group.add_argument('--verify-native', action='store_true', help='testar SQLite/PTY no Electron sem abrir o app')
     parser.add_argument('--target', default='/data/lionclaw', help='pasta exclusiva da aplicação (padrão: /data/lionclaw)')

@@ -8,7 +8,7 @@ import subprocess
 import tempfile
 import tomllib
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 import dictation
 import installer
@@ -107,10 +107,31 @@ class DictationTests(unittest.TestCase):
         self.assertFalse(self.app.state.exists())
         self.assertEqual(self.calls, [])
 
-    def test_optional_without_voxtype(self):
+    def test_fresh_install_without_voxtype_records_not_applicable(self):
+        self.app.environment = Mock()
         with patch.object(installer.shutil, 'which', return_value=None):
             self.assertIn('NÃO APLICÁVEL', self.app.verify_dictation())
-        self.assertNotIn('dictation', installer.SEQUENCE)
+            self.app.step('dictation')
+        self.assertEqual(self.app.report['steps'][-1]['status'], 'NOT_APPLICABLE')
+        self.assertEqual(self.app.report['dictation']['configuration'], 'NOT_APPLICABLE')
+        self.assertEqual(self.config.read_text(), CONFIG)
+        self.assertFalse(self.helper.exists())
+        self.assertEqual(self.calls, [])
+
+    def test_fresh_install_includes_dictation_before_first_launch(self):
+        self.app.show_plan = Mock()
+        self.app.step = Mock()
+        self.app.install()
+        executed = [c.args[0] for c in self.app.step.call_args_list]
+        self.assertEqual(executed[-2:], ['menu', 'dictation'])
+        self.assertNotIn('first-run', executed)
+
+    def test_fresh_install_applies_dictation_with_voxtype(self):
+        self.app.environment = Mock()
+        self.app.step('dictation')
+        self.assertEqual(self.app.report['steps'][-1]['status'], 'PASSED')
+        self.assertEqual(tomllib.loads(self.config.read_text())['output']['mode'], 'clipboard')
+        self.assertTrue(self.helper.is_file())
 
     def test_quoted_paths_and_missing_newline(self):
         helper = Path('/tmp/a b/$HOME `cmd`/paste.py')

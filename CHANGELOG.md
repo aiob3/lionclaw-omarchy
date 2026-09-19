@@ -1,5 +1,27 @@
 # Histórico de versões
 
+## 1.1.1 — 19/09/2026
+
+O instalador publicado no lançamento de hoje já inclui a correção do ditado F9 no fluxo de **primeira instalação** do LionClaw no Omarchy.
+
+## Instalar do zero
+
+```bash
+git clone https://github.com/aiob3/lionclaw-omarchy.git
+cd lionclaw-omarchy
+./install.sh
+```
+
+Na TUI, pressione **A** para executar a instalação guiada, incluindo requisitos, acesso ao repositório oficial, Node, dependências, rebuild, build, menu e **Compatibilidade F9**. Também é possível executar `./install.sh --install`.
+
+A etapa F9 já faz parte da sequência: quando o Voxtype está configurado no Omarchy, o instalador aplica a colagem nativa do Hyprland com backup e confirmação. Assim, quem está começando não precisa instalar primeiro e procurar a correção separadamente. A última transcrição fica na área de transferência.
+
+Se o Voxtype não estiver instalado, o relatório registra **NÃO APLICÁVEL**, sem bloquear o uso do LionClaw sem voz. Para habilitar voz depois, configure o Voxtype pelo Omarchy e execute `./install.sh --step dictation`. A etapa não baixa modelos de voz. Voxtype existente precisa estar configurado, ativo e ocioso; hooks personalizados são preservados.
+
+**Validação:** 38 testes aprovados, incluindo presença da etapa no fluxo completo, aplicação com Voxtype e registro de não aplicabilidade sem ele. O helper já foi testado com texto acentuado em Electron 33.4.11/XWayland. Instalação integral em VM limpa e confirmação visual do F9 no LionClaw continuam separadas e não são alegadas por esses testes.
+
+[Guia para começar](https://aiob3.github.io/lionclaw-omarchy/) · [Etapa Compatibilidade F9](https://aiob3.github.io/lionclaw-omarchy/#dictation) · [Diagnóstico técnico](https://github.com/aiob3/lionclaw-omarchy/blob/v1.1.1/docs/DITADO-F9.md)
+
 ## 1.1.0 — 19/09/2026
 
 A primeira atualização do instalador comunitário corrige o ditado F9 que chegava ao Electron/XWayland como números e símbolos. A fala já era reconhecida corretamente; a falha ocorria na entrega por teclado virtual. A nova etapa usa a área de transferência e a colagem nativa do Hyprland.

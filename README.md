@@ -40,31 +40,26 @@ mkdir -p "$HOME/Applications"
 
 Na TUI: **↑↓** selecionam, **Enter** executa a etapa, **A** instala a sequência, **C** verifica requisitos, **Q** sai. Requer terminal de pelo menos 78 × 21; há CLI para terminais menores e automação.
 
-## Primeira atualização — v1.1.0: ditado F9
+## Instalação nova com a correção F9 incluída
 
-Corrigido o bug em que o ditado chegava ao Electron/XWayland como números e símbolos. A etapa opcional **Ditado F9** aplica a colagem nativa do Hyprland com backup. [Notas da versão](https://github.com/aiob3/lionclaw-omarchy/releases/tag/v1.1.0) · [Como funciona e como reverter](docs/DITADO-F9.md).
+A versão atual **1.1.1**, publicada no dia do lançamento do projeto, já incorpora a correção do ditado no fluxo normal. Na TUI, pressione **A — instalar sequência**, ou use `./install.sh --install`. A etapa **Compatibilidade F9** é executada depois do menu e antes do primeiro início manual; não exige aplicar uma atualização separada.
 
-Para quem já instalou, execute na pasta do **instalador público**:
+Se o Voxtype já estiver configurado no Omarchy, a etapa aplica a colagem nativa do Hyprland com backup e confirmação. Se não estiver instalado, registra **NÃO APLICÁVEL** e mantém a instalação do LionClaw utilizável sem ditado. Para habilitar voz posteriormente, configure o Voxtype pelo Omarchy e execute `./install.sh --step dictation`. A etapa não baixa modelos de voz.
 
-```bash
-git pull --ff-only
-./install.sh --step dictation --target /data/lionclaw
-```
-
-Ajuste `--target` ao destino existente. Quem usa ZIP pode extrair a nova versão em outra pasta e executar a mesma etapa. Não é necessário reinstalar o LionClaw nem repetir npm/rebuild. Requer Voxtype configurado e Hyprland 0.56. Depois, confirme o texto com F9 no aplicativo antes de enviar. A última transcrição fica na área de transferência.
+[Notas da versão atual](https://github.com/aiob3/lionclaw-omarchy/releases/tag/v1.1.1) · [Diagnóstico e reversão](docs/DITADO-F9.md).
 
 ## Modos
 
 ```bash
 ./install.sh --check                       # diagnóstico; sem provisionamento
 ./install.sh --plan                        # sequência; sem rede
-./install.sh --install                     # instala até registrar o menu
+./install.sh --install                     # instala, registra menu e configura F9
 ./install.sh --step access                 # validar conta/acesso
 ./install.sh --step source                 # clone da revisão fixada
 ./install.sh --step dependencies           # npm ci + postinstall
 ./install.sh --step rebuild                # recompilar e testar módulos
 ./install.sh --verify-native               # SQLite/PTY; não abre o app
-./install.sh --step dictation              # correção opcional F9/Voxtype, com backup
+./install.sh --step dictation              # repetir somente a etapa F9, se necessário
 ./install.sh --step first-run              # backup de config e abertura consentida
 ```
 
@@ -83,13 +78,14 @@ Passe `--target` em cada chamada se o destino não for o padrão. `--yes` confir
 | Rebuild | `npm run rebuild:electron` | SQLite, PTY e carregamento keytar no Electron |
 | Build | `npm run build` | main, preload, renderer e prova nativa |
 | Menu | Launcher/desktop do usuário com backup | desktop-file-validate e cadastro atualizado |
+| Compatibilidade F9 | Aplica correção quando Voxtype estiver instalado/configurado; ausente é não aplicável | backup, configuração e serviço; teste visual separado |
 | Primeiro início | Abertura separada com confirmação | janela visível; login fica com o usuário |
 
 Electron vem do npm do projeto, não de pacman/yay. Ferramentas já presentes por mise ou pacotes alternativos são reaproveitadas. Se pacman falhar por bases/espelhos desatualizados, atualize o Omarchy pelo fluxo normal antes de repetir; não execute `pacman -Sy` isoladamente.
 
 ## Ditado F9 no Electron/XWayland
 
-A etapa opcional **Ditado F9** está disponível na TUI e em `--step dictation`; `--install` continua instalando até o menu. O diagnóstico inclui o item `dictation`. Voxtype ausente é não aplicável, sem impedir a instalação do LionClaw.
+A etapa **Compatibilidade F9** integra a TUI e `--install` desde a primeira instalação. Também pode ser repetida com `--step dictation`. O diagnóstico inclui o item `dictation`. Voxtype ausente é não aplicável, sem impedir a instalação do LionClaw.
 
 A correção substitui digitação virtual por `mode = "clipboard"` e um `post_output_command` que cola pelo Hyprland 0.56, com Ctrl+V em aplicativos e Shift+Insert em terminais. Faz backup, preserva modelo/idioma/microfone, recusa hooks personalizados e serviço ocupado, desativa envio automático e tenta reverter se houver falha. A última transcrição permanece no clipboard. Não cria nem altera o atalho F9 do Omarchy.
 

@@ -24,6 +24,6 @@ Dois entregáveis independentes: guia público de duas colunas (roteiro e instru
 5. Homologação declarada como validação local da revisão, não certificação oficial ou prova de instalação em Omarchy limpo.
 6. Se houver ensaio em VM limpa, capturas reais numeradas de todos os procedimentos aplicáveis e da aplicação funcionando são obrigatórias, com índice, resultado observado, data e SHA-256. Logs não substituem as telas.
 
-## Ditado F9 (instalador 1.1.0)
+## Compatibilidade F9 (instalador 1.1.1)
 
-Etapa opcional compartilhada por TUI/guia, fora da sequência obrigatória. Para Voxtype previamente configurado e Hyprland 0.56, instalar helper de colagem nativa, preservar TOML não relacionado, fazer backup e restaurar diante de falha. Recusar hooks personalizados, symlinks e gravação ativa. Diagnóstico somente leitura. Testar preservação, repetição, rollback e liberação das teclas. Configuração aprovada não implica homologação visual do F9; registrar esta separadamente.
+Etapa compartilhada por TUI/guia, incluída em A/--install após o menu. Com Voxtype ausente, registrar NOT_APPLICABLE e orientar ativação posterior; com Voxtype presente, aplicar a correção ou interromper com motivo explícito. Para Voxtype previamente configurado e Hyprland 0.56, instalar helper de colagem nativa, preservar TOML não relacionado, fazer backup e restaurar diante de falha. Recusar hooks personalizados, symlinks e gravação ativa. Diagnóstico somente leitura. Testar preservação, repetição, rollback e liberação das teclas. Configuração aprovada não implica homologação visual do F9; registrar esta separadamente.

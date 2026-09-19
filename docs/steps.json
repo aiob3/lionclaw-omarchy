@@ -4,7 +4,7 @@
     "id": "overview",
     "title": "Visão geral",
     "summary": "Escolha o percurso manual ou o instalador. Ambos reproduzem a mesma revisão validada do LionClaw.",
-    "tui": "Instalador comunitário independente. O código oficial é privado. A instalação termina no menu; abertura, onboarding e credenciais são etapas separadas.",
+    "tui": "Instalador comunitário independente. O código oficial é privado. A instalação inclui menu e compatibilidade F9; abertura, onboarding e credenciais são etapas separadas.",
     "sections": [
       {
         "heading": "Dois caminhos, a mesma sequência",
@@ -12,7 +12,7 @@
         "code": "./install.sh --check",
         "caption": "Verifica requisitos sem provisionar o sistema. Pode consultar o GitHub.",
         "expected": "Cada requisito aparece como OK ou PENDENTE. Pendência não é aprovação nem erro a ignorar.",
-        "note": "Atualização 1.1.0: correção do ditado F9 que aparecia como números e símbolos no Electron/XWayland. A etapa 11, Ditado F9, aplica o ajuste com backup em instalações existentes."
+        "note": "Instalação nova: a versão 1.1.1 já inclui a correção F9 na sequência da TUI (tecla A) e em --install. Não é necessário aplicar uma atualização separada depois de instalar."
       },
       {
         "heading": "Começar pelo instalador",
@@ -228,22 +228,28 @@
   {
     "number": 11,
     "id": "dictation",
-    "title": "Ditado F9 (opcional)",
-    "summary": "Corrija texto convertido em números no Electron via XWayland.",
-    "tui": "Para quem já usa Voxtype. Copia o texto e cola pelo Hyprland 0.56, com backup e sem alterar modelo ou microfone. Reinicia somente se o serviço estiver ocioso. Não faz parte de A/--install. Confirme visualmente com F9 no LionClaw depois.",
+    "title": "Compatibilidade F9",
+    "summary": "Prepare o ditado para o Electron/XWayland durante a primeira instalação.",
+    "tui": "Incluída em A/--install. Com Voxtype configurado, aplica colagem Hyprland com backup e preserva modelo/microfone. Voxtype ausente: NÃO APLICÁVEL, sem bloquear LionClaw. Depois de habilitar voz pelo Omarchy, repita esta etapa. Confira F9 visualmente após abrir o app.",
     "sections": [
       {
-        "heading": "Atualizar quem já instalou",
-        "text": "Na pasta do instalador público lionclaw-omarchy, atualize o código e execute apenas esta etapa. Ajuste o destino à sua instalação. Se baixou ZIP, extraia a nova versão em uma pasta separada. Não é necessário reinstalar o aplicativo nem repetir npm/rebuild.",
-        "code": "git pull --ff-only\n./install.sh --step dictation --target /data/lionclaw",
-        "expected": "Versão 1.1.0 do instalador; correção aplicada com backup e instrução para conferir F9 no aplicativo."
+        "heading": "Incluída desde a primeira instalação",
+        "text": "Ao começar pelo instalador, use a tecla A na TUI ou --install. Depois de registrar o menu, a sequência prepara o ditado F9 quando Voxtype já estiver configurado no Omarchy. A abertura do aplicativo continua sendo uma etapa separada.",
+        "code": "git clone https://github.com/aiob3/lionclaw-omarchy.git\ncd lionclaw-omarchy\n./install.sh",
+        "expected": "A sequência inclui Compatibilidade F9; não é necessário procurar uma correção separada após instalar."
       },
       {
-        "heading": "Aplicar a correção",
-        "text": "O reconhecimento produz texto correto, mas a digitação virtual pode chegar como números e símbolos. Esta etapa opcional usa clipboard e colagem nativa do Hyprland. Requer Voxtype configurado e ativo, wl-copy e Hyprland 0.56. Não instala modelo nem altera atalhos.",
+        "heading": "Executar ou repetir apenas esta etapa",
+        "text": "O reconhecimento produz texto correto, mas a digitação virtual pode chegar como números e símbolos. A instalação já inclui a entrega por clipboard e colagem nativa do Hyprland. Para repetir somente esta etapa, use o comando abaixo. Requer Voxtype configurado e ativo, wl-copy e Hyprland 0.56.",
         "code": "\"$LIONCLAW_INSTALLER\" --step dictation --target \"$LIONCLAW_DIR\"",
         "expected": "Backup criado; configuração e serviço conferidos. A última transcrição fica na área de transferência.",
         "note": "A configuração afeta todos os aplicativos que recebem ditado. Comandos personalizados de pré/pós-saída são preservados e exigem integração manual. O instalador desativa auto_submit e recusa smart_auto_submit ativo."
+      },
+      {
+        "heading": "Quando o ditado ainda não está instalado",
+        "text": "A instalação do LionClaw continua sem voz e o relatório registra NÃO APLICÁVEL. Para usar F9, configure primeiro o Voxtype pelo fluxo do Omarchy, escolhendo modelo, idioma e microfone; depois execute a etapa dictation.",
+        "code": "\"$LIONCLAW_INSTALLER\" --step dictation --target \"$LIONCLAW_DIR\"",
+        "expected": "A etapa aplica a compatibilidade quando o Voxtype estiver ativo e ocioso. Não baixa modelos nem marca voz ausente como teste aprovado."
       },
       {
         "heading": "Confirmar no aplicativo",

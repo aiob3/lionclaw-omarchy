@@ -28,7 +28,16 @@ mudar o código privado do LionClaw, o modelo Whisper, idioma, microfone ou GPU.
 
 ## Correção incorporada ao instalador
 
-Na TUI, selecionar **Ditado F9 (opcional)**, ou executar:
+Desde a versão 1.1.1, a instalação nova pela tecla **A** da TUI ou `--install`
+já executa **Compatibilidade F9** após registrar o menu. Para começar:
+
+```bash
+git clone https://github.com/aiob3/lionclaw-omarchy.git
+cd lionclaw-omarchy
+./install.sh
+```
+
+Para repetir somente a etapa de ditado, executar:
 
 ```bash
 ./install.sh --step dictation --target /data/lionclaw
@@ -36,8 +45,11 @@ Na TUI, selecionar **Ditado F9 (opcional)**, ou executar:
 
 Pré-requisitos: Voxtype já configurado e ativo, Python 3.11+, `wl-copy` e uma
 sessão Hyprland 0.56 acessível. O instalador não instala modelos de voz. O F9
-continua sendo o atalho fornecido pelo Omarchy. A sequência `--install` mantém
-o ditado opcional, e `--check` inclui sua situação sem modificar arquivos.
+continua sendo o atalho fornecido pelo Omarchy. A sequência `--install` inclui
+a compatibilidade F9, e `--check` inclui sua situação sem modificar arquivos.
+Se Voxtype estiver ausente, a etapa registra **NOT_APPLICABLE**: LionClaw pode
+ser usado sem voz. Para habilitar o ditado depois, configurar Voxtype pelo
+Omarchy e repetir `--step dictation`. Ausência não é aprovação de teste F9.
 
 O ajuste é global para o Voxtype, com caminhos derivados de `XDG_CONFIG_HOME`:
 
