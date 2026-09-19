@@ -87,4 +87,6 @@ Navegador real (Chrome conectado): navegação desktop, duas colunas, seleção 
 
 ## Critério para uma próxima revisão
 
+Se for realizado um ensaio em VM limpa, seguir obrigatoriamente o [protocolo de capturas por etapa](docs/VM-LIMPA.md). Ele exige imagens reais numeradas, inclusive da aplicação funcionando, primeira abertura pelo menu, interface, terminal integrado e reabertura, com resultados e SHA-256. Esse ensaio permanece **NÃO EXECUTADO**.
+
 Atualizar explicitamente manifest.json, rever requisitos e efeitos de primeiro boot, passar testes do instalador, instalar a revisão em ambiente de ensaio, validar módulos, build, menu e janela. Registrar separadamente os recursos funcionais exercitados. Publicar nova versão do instalador somente com evidência correspondente.

@@ -71,6 +71,8 @@ Electron vem do npm do projeto, não de pacman/yay. Ferramentas já presentes po
 
 [HOMOLOGACAO.md](HOMOLOGACAO.md) distingue a instalação local observada, os testes automatizados com cenários simulados e os limites ainda abertos. Não alegamos certificação oficial, instalação testada em Omarchy limpo, compatibilidade universal de hardware ou validação dos provedores.
 
+Um futuro ensaio em VM limpa deverá seguir o [protocolo de capturas](docs/VM-LIMPA.md): imagens reais por etapa e da aplicação funcionando, resultados, índice e hashes. O ensaio em VM limpa ainda não foi executado.
+
 ## Dados, permissões e recuperação
 
 - Git, npm, mise e app rodam como usuário. Somente pacman usa pkexec. Sem `sudo`, Electron global ou `--no-sandbox`.

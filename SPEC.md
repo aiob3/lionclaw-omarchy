@@ -22,3 +22,4 @@ Dois entregáveis independentes: guia público de duas colunas (roteiro e instru
 3. Teste de TUI em pseudo-terminal, sintaxe Bash/Python, conteúdo e links do site, desktop e viewport móvel no navegador real.
 4. Repositório público e URL Pages acessíveis; CI pública sem acesso ao upstream privado.
 5. Homologação declarada como validação local da revisão, não certificação oficial ou prova de instalação em Omarchy limpo.
+6. Se houver ensaio em VM limpa, capturas reais numeradas de todos os procedimentos aplicáveis e da aplicação funcionando são obrigatórias, com índice, resultado observado, data e SHA-256. Logs não substituem as telas.
