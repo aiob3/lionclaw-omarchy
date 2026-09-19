@@ -1,0 +1,15 @@
+{
+  "installer_version": "1.0.0",
+  "repository": "LionLabsCommunity/lionclawv1.0",
+  "commit": "051da4bdff2c44b43bd78a3166aa9374d1dba3b9",
+  "application_version": "3.8.0",
+  "node": "24.11.1",
+  "electron": "33.4.11",
+  "architecture": "x86_64",
+  "sha256": {
+    "package.json": "ce508c4c475da261ba2830a6ac7f5fb1ad21ff6e24899b0fb61622ec13ec2d06",
+    "package-lock.json": "7f2be95fa1b1e548bc21ce48a2188afd2720c4cd5e3871bb11742707a65ddfeb"
+  },
+  "validated_on": "2026-09-19",
+  "scope": "Instalação e abertura local no Omarchy. Provedores, login e instalação em máquina limpa não homologados."
+}

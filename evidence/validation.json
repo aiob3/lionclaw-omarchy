@@ -1,0 +1,21 @@
+{
+  "date": "2026-09-19",
+  "installer_version": "1.0.0",
+  "upstream_commit": "051da4bdff2c44b43bd78a3166aa9374d1dba3b9",
+  "environment": "Omarchy 4.0.0.r2158.gd174d4a x86_64; system prerequisites already installed",
+  "fresh_checkout_end_to_end": {
+    "exit": 0,
+    "commands_recorded": 34,
+    "passed": ["environment", "packages", "access", "node", "source", "dependencies", "rebuild", "build", "menu"],
+    "desktop_destination": "isolated temporary XDG directories",
+    "application_auto_launched": false
+  },
+  "native_test": {
+    "electron": "33.4.11", "node": "v20.18.3", "abi": "130",
+    "sqlite": "OK", "keytar_load": "OK", "pty": "PTY_OK", "exit": 0
+  },
+  "unit_tests": {"passed": 23, "failed": 0, "missing_prerequisites": "simulated"},
+  "tui": {"terminal": "120x32", "navigation": "passed", "exit": 0},
+  "guide": {"desktop": "1536x1046", "mobile": "390x844", "steps_navigated": 12, "clipboard": "verified", "review_progress": "verified"},
+  "not_validated": ["clean Omarchy VM", "provider login", "agent workflows", "other hardware", "production first boot in isolation"]
+}

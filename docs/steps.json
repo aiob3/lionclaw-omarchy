@@ -1,0 +1,275 @@
+[
+  {
+    "number": 1,
+    "id": "overview",
+    "title": "Visão geral",
+    "summary": "Escolha o percurso manual ou o instalador. Ambos reproduzem a mesma revisão validada do LionClaw.",
+    "tui": "Instalador comunitário independente. O código oficial é privado. A instalação termina no menu; abertura, onboarding e credenciais são etapas separadas.",
+    "sections": [
+      {
+        "heading": "Dois caminhos, a mesma sequência",
+        "text": "Siga o guia manual ou execute as etapas pelo instalador no terminal. O acesso ao repositório oficial continua obrigatório. O nome oficial da aplicação usada neste guia é LionClaw.",
+        "code": "./install.sh --check",
+        "caption": "Verifica requisitos sem provisionar o sistema. Pode consultar o GitHub.",
+        "expected": "Cada requisito aparece como OK ou PENDENTE. Pendência não é aprovação nem erro a ignorar."
+      },
+      {
+        "heading": "Começar pelo instalador",
+        "text": "Baixe o repositório público, leia os arquivos e abra a TUI. Se Git não estiver instalado, use o botão Code → Download ZIP no GitHub, extraia o arquivo e entre na pasta extraída. O bootstrap oferece instalar Python se estiver ausente.",
+        "code": "git clone https://github.com/aiob3/lionclaw-omarchy.git\ncd lionclaw-omarchy\n./install.sh --plan\n./install.sh",
+        "expected": "Na TUI, use ↑↓, Enter, A para instalar a sequência, C para verificar e Q para sair."
+      },
+      {
+        "heading": "O que foi validado",
+        "text": "Em 19/09/2026, foram executados npm ci, rebuild, testes de SQLite e PTY no Electron, build da interface e registro do menu. A janela abriu no Omarchy por XWayland. Essa é uma validação comunitária local, sem afiliação ou certificação oficial do LionLabs ou do Omarchy.",
+        "note": "Login, provedores de IA, todos os recursos da aplicação, outras arquiteturas e instalação em uma máquina Omarchy limpa ainda não foram homologados. Os testes do instalador distinguem simulações de execução real."
+      }
+    ]
+  },
+  {
+    "number": 2,
+    "id": "environment",
+    "title": "Ambiente Omarchy",
+    "summary": "Confirme sistema, arquitetura, usuário e destino antes de instalar.",
+    "tui": "Escopo: Omarchy x86_64. Use usuário comum e uma pasta exclusiva. O padrão /data/lionclaw só funciona se /data existir e você tiver permissão de escrita.",
+    "sections": [
+      {
+        "heading": "Atestar o ambiente",
+        "text": "O Omarchy desta validação identifica-se como ID=omarchy e ID_LIKE=arch. A arquitetura deve ser x86_64. Não execute o instalador como root.",
+        "code": "cat /etc/os-release\nuname -m\nid -u\n# Na pasta do instalador público:\nexport LIONCLAW_INSTALLER=\"$PWD/install.sh\"\nexport LIONCLAW_DIR=/data/lionclaw\n\"$LIONCLAW_INSTALLER\" --step environment --target \"$LIONCLAW_DIR\"",
+        "expected": "ID=omarchy, arquitetura x86_64 e UID diferente de 0."
+      },
+      {
+        "heading": "Escolher uma pasta",
+        "text": "O destino padrão é /data/lionclaw. Se /data não existir ou não for gravável, escolha uma pasta sua. Não altere permissões de discos nem use pkexec para clonar. A pasta da aplicação deve ser diferente da pasta deste instalador.",
+        "code": "mkdir -p \"$HOME/Applications\"\nexport LIONCLAW_DIR=\"$HOME/Applications/lionclaw\"\n\"$LIONCLAW_INSTALLER\" --target \"$LIONCLAW_DIR\"",
+        "expected": "Pasta pai existente e gravável. Use o mesmo --target nas próximas execuções.",
+        "note": "LIONCLAW_INSTALLER guarda o caminho do instalador e LIONCLAW_DIR guarda o destino. Mantenha este terminal aberto ou redefina as duas variáveis em uma nova sessão. Reserve espaço para código, dependências, build e downloads do primeiro início; a necessidade varia."
+      }
+    ]
+  },
+  {
+    "number": 3,
+    "id": "packages",
+    "title": "Pacotes do sistema",
+    "summary": "Verifique ferramentas de compilação e bibliotecas. Provisione somente o que estiver ausente.",
+    "tui": "Detecta git, gh, mise, Python, make, gcc, g++, pkg-config, utilitários desktop e XWayland por comando. Bibliotecas são verificadas pelo pacman. Pacotes faltantes são mostrados antes de instalar.",
+    "sections": [
+      {
+        "heading": "Qual gerenciador usar",
+        "text": "pacman cuida de pacotes do sistema. yay também atende ao AUR, mas não é necessário nesta sequência. npm instala as dependências da aplicação. Electron global não substitui a versão fixada pelo projeto.",
+        "code": "command -v git gh mise python3 make gcc g++ pkg-config Xwayland\npacman -Q libsecret gtk3 nss alsa-lib libxss libxtst libnotify\npkg-config --exists libsecret-1",
+        "expected": "Comandos resolvidos e bibliotecas presentes. Ferramentas podem vir de pacotes alternativos ou de gerenciadores já configurados."
+      },
+      {
+        "heading": "Provisionar ausências",
+        "text": "A etapa abaixo instala somente os requisitos não encontrados e os verifica novamente. Exibe a lista, solicita confirmação e usa pkexec /usr/bin/pacman -S --needed. npm, mise e Git continuam sem privilégios.",
+        "code": "\"$LIONCLAW_INSTALLER\" --step packages",
+        "expected": "OK: ferramentas e bibliotecas presentes. A sequência para se restar algum requisito.",
+        "note": "Para uma instalação manual, os nomes canônicos são git, github-cli, mise, python, base-devel, pkgconf, desktop-file-utils, xorg-xwayland e as bibliotecas acima. Não reinstale uma ferramenta já disponível apenas porque o pacote tem outro nome. Se os espelhos retornarem 404, atualize o Omarchy pelo fluxo normal, reinicie se solicitado e repita. Nunca use pacman -Sy isoladamente."
+      }
+    ]
+  },
+  {
+    "number": 4,
+    "id": "access",
+    "title": "Acesso ao GitHub",
+    "summary": "Autentique sua própria conta e confirme o convite ao repositório oficial privado.",
+    "tui": "Uma conta autenticada não implica acesso ao LionClaw. A etapa confirma leitura do repositório. Sem acesso, interrompe antes de clonar. Não solicita tokens pelo instalador nem os publica.",
+    "sections": [
+      {
+        "heading": "Entrar com a conta autorizada",
+        "text": "Se ainda não estiver autenticado, execute o login oficial do GitHub CLI. Conclua o fluxo no navegador. O acesso deve ter sido concedido pela comunidade LionLabs.",
+        "code": "gh auth status --hostname github.com\n# Execute somente se o status indicar ausência de login:\ngh auth login --hostname github.com --git-protocol https --web\ngh api repos/LionLabsCommunity/lionclawv1.0 --jq '.full_name'",
+        "expected": "LionLabsCommunity/lionclawv1.0"
+      },
+      {
+        "heading": "Entender um 404",
+        "text": "Em um repositório privado, 404 pode significar falta de autorização. Confirme conta ativa, convite aceito e conectividade. Um erro de rede também impede a verificação; não o interprete como acesso concedido.",
+        "code": "\"$LIONCLAW_INSTALLER\" --step access",
+        "expected": "OK: sua conta consegue ler o repositório oficial.",
+        "note": "Baixar o instalador público não libera o código oficial. Não há espelho, pacote do LionClaw ou credencial compartilhada neste repositório."
+      }
+    ]
+  },
+  {
+    "number": 5,
+    "id": "node",
+    "title": "Node 24",
+    "summary": "Instale e selecione Node 24.11.1 somente para os comandos do LionClaw.",
+    "tui": "mise install node@24.11.1 provisiona a versão se necessário. Cada comando usa mise exec, preservando o Node global. O Electron tem seu próprio runtime interno.",
+    "sections": [
+      {
+        "heading": "Provisionar a versão validada",
+        "text": "A tentativa com Node 26.9.0 falhou na compilação do better-sqlite3 12.6.2. Node 24.11.1 superou esse erro. Essa versão está fixada no manifesto para reproduzir a validação, não para acompanhar automaticamente o Node mais recente.",
+        "code": "mise install node@24.11.1\nmise exec node@24.11.1 -- node --version\nmise exec node@24.11.1 -- npm --version",
+        "expected": "Node v24.11.1. A versão npm observada nesta validação foi 11.6.2."
+      },
+      {
+        "heading": "Manter a seleção em todas as etapas",
+        "text": "Apenas instalar Node 24 não muda necessariamente o Node usado pelo terminal. Use mise exec na instalação, no rebuild e no build. O instalador faz isso em cada chamada.",
+        "code": "\"$LIONCLAW_INSTALLER\" --step node",
+        "expected": "OK: Node v24.11.1",
+        "note": "Não execute mise use --global para resolver este caso. O ambiente dos outros projetos deve continuar como estava."
+      }
+    ]
+  },
+  {
+    "number": 6,
+    "id": "source",
+    "title": "Código oficial",
+    "summary": "Clone com sua autorização, selecione a revisão validada e confira os hashes.",
+    "tui": "Revisão fixa, clone em staging e promoção só após conferir hashes. Diretórios existentes com outra revisão ou alterações são recusados. Nenhum reset, pull ou troca silenciosa de versão.",
+    "sections": [
+      {
+        "heading": "Clonar a revisão exata",
+        "text": "A forma recomendada é a etapa source: ela usa a credencial do gh somente no comando Git, sem alterar a configuração global, e valida o conteúdo antes de promover o clone. Se a pasta já contiver a revisão íntegra, ela será reaproveitada.",
+        "code": "\"$LIONCLAW_INSTALLER\" --step source --target \"$LIONCLAW_DIR\"",
+        "expected": "OK: revisão e hashes conferidos."
+      },
+      {
+        "heading": "Equivalente manual",
+        "text": "Use um destino novo. O helper de credencial abaixo vale apenas para essas chamadas. A revisão permanece fixa, mesmo se main avançar.",
+        "code": "git -c credential.helper= -c 'credential.helper=!gh auth git-credential' clone --filter=blob:none --no-checkout https://github.com/LionLabsCommunity/lionclawv1.0.git \"$LIONCLAW_DIR\"\ngit -c credential.helper= -c 'credential.helper=!gh auth git-credential' -C \"$LIONCLAW_DIR\" checkout --detach 051da4bdff2c44b43bd78a3166aa9374d1dba3b9\ncd \"$LIONCLAW_DIR\"\ngit rev-parse HEAD\nsha256sum package.json package-lock.json",
+        "expected": "HEAD 051da4bdff2c44b43bd78a3166aa9374d1dba3b9. Compare ambos os hashes com manifest.json do instalador.",
+        "note": "Se houver trabalho local, preserve-o e use outra pasta. O instalador não sobrescreve alterações e não concede acesso ao upstream."
+      }
+    ]
+  },
+  {
+    "number": 7,
+    "id": "dependencies",
+    "title": "Dependências npm",
+    "summary": "Instale pelo lockfile e deixe o postinstall oficial concluir antes de avançar.",
+    "tui": "npm ci recria node_modules e executa postinstall: runtime CodeGraph, MCPs e sidecar. Exige código íntegro e app fechado. Para imediatamente se npm retornar erro.",
+    "sections": [
+      {
+        "heading": "Instalar o conjunto fixado",
+        "text": "Feche o LionClaw antes de alterar suas dependências. npm ci usa package-lock.json e recria node_modules. O postinstall da revisão também compila os componentes internos; não interrompa só porque surgiram avisos de depreciação.",
+        "code": "cd \"$LIONCLAW_DIR\"\nmise exec node@24.11.1 -- npm ci --no-audit --no-fund",
+        "expected": "Exit 0. Nesta validação: 1.383 pacotes, 27 MCPs OK, 0 falhas e 1 item ignorado. Contagens não substituem o exit code."
+      },
+      {
+        "heading": "Confirmar a ferramenta de rebuild",
+        "text": "electron-rebuild deve existir dentro de node_modules. Se npm ci falhar, corrija a primeira falha antes de tentar o rebuild. Não instale Electron ou electron-rebuild globalmente para esconder uma instalação incompleta.",
+        "code": "test -x node_modules/.bin/electron-rebuild\nmise exec node@24.11.1 -- node_modules/.bin/electron-rebuild --version",
+        "expected": "Electron Rebuild Version: 4.0.3",
+        "note": "Não execute npm audit fix nem atualize o lockfile durante esta sequência: isso muda o conjunto que está sendo validado."
+      }
+    ]
+  },
+  {
+    "number": 8,
+    "id": "rebuild",
+    "title": "Rebuild do Electron",
+    "summary": "Recompile SQLite e PTY para o runtime interno do Electron 33.4.11.",
+    "tui": "Node do terminal e Node do Electron têm ABIs distintas. Primeiro npm ci deve passar; depois npm run rebuild:electron. A etapa testa SQLite, PTY e carregamento de keytar sem ler segredos.",
+    "sections": [
+      {
+        "heading": "Recompilar para o runtime correto",
+        "text": "O Node 24 executa as ferramentas. O Electron 33.4.11 desta revisão contém Node 20.18.3, ABI 130. Os módulos nativos precisam corresponder ao Electron quando a aplicação abre.",
+        "code": "cd \"$LIONCLAW_DIR\"\nmise exec node@24.11.1 -- npm run rebuild:electron",
+        "expected": "✔ Rebuild Complete e exit 0."
+      },
+      {
+        "heading": "Exercitar os módulos nativos",
+        "text": "Execute a prova independente pelo caminho guardado em LIONCLAW_INSTALLER. Ela abre SQLite em memória, faz uma consulta, carrega keytar sem acessar credenciais e inicia um PTY que imprime PTY_OK. O aplicativo não é inicializado.",
+        "code": "\"$LIONCLAW_INSTALLER\" --verify-native --target \"$LIONCLAW_DIR\"",
+        "expected": "electron 33.4.11, sqlite OK, keytar_load OK e pty PTY_OK.",
+        "note": "Esse teste comprova carregamento e operações mínimas. Não comprova onboarding, acesso ao keychain ou todos os recursos do aplicativo."
+      }
+    ]
+  },
+  {
+    "number": 9,
+    "id": "build",
+    "title": "Build e testes",
+    "summary": "Compile main, preload e interface e repita a validação nativa.",
+    "tui": "Gera dist/main/index.js, dist/preload/index.js e dist/renderer/index.html. O menu usa esse build, sem servidor de desenvolvimento. Build não equivale a janela renderizada.",
+    "sections": [
+      {
+        "heading": "Gerar a aplicação local",
+        "text": "A revisão não define um pacote Linux distribuível pronto. Este instalador gera o build local e o executa com o binário Electron fornecido por npm.",
+        "code": "cd \"$LIONCLAW_DIR\"\nmise exec node@24.11.1 -- npm run build\ntest -f dist/main/index.js\ntest -f dist/preload/index.js\ntest -f dist/renderer/index.html",
+        "expected": "Build com exit 0 e os três artefatos presentes."
+      },
+      {
+        "heading": "Registrar uma evidência limitada",
+        "text": "A etapa build do instalador também executa a prova nativa. Um build bem-sucedido não comprova renderização da janela, login, conectividade com provedores ou resultado de agentes.",
+        "code": "\"$LIONCLAW_INSTALLER\" --step build --target \"$LIONCLAW_DIR\"",
+        "expected": "OK: main, preload e interface compilados; prova nativa aprovada.",
+        "note": "A revisão upstream contém avisos de bundling. Eles são diferentes de erro de build. Uma falha deve interromper a sequência."
+      }
+    ]
+  },
+  {
+    "number": 10,
+    "id": "menu",
+    "title": "Menu de aplicativos",
+    "summary": "Registre o atalho LionClaw com ícone, Node fixado e XWayland.",
+    "tui": "Cria launcher do usuário e lionclaw.desktop. Faz backup de arquivos anteriores, valida o candidato e atualiza o cadastro desktop. Não abre a aplicação automaticamente.",
+    "sections": [
+      {
+        "heading": "Instalar o atalho",
+        "text": "A etapa menu cria um launcher em ~/.local/share/lionclaw-omarchy e uma entrada em ~/.local/share/applications. Se XDG_DATA_HOME estiver definido, essa raiz é respeitada. Os arquivos existentes são preservados em backup antes de substituir.",
+        "code": "\"$LIONCLAW_INSTALLER\" --step menu --target \"$LIONCLAW_DIR\"",
+        "expected": "OK: procure LionClaw no menu. A aplicação não foi aberta automaticamente."
+      },
+      {
+        "heading": "Entender o comando de abertura",
+        "text": "O launcher escolhe Node 24, NODE_ENV=production e ELECTRON_OZONE_PLATFORM_HINT=x11. Na validação local, a execução Wayland iniciou processos mas não apresentou janela; XWayland resultou em janela mapeada. Isso não significa que Wayland falhe em todas as máquinas.",
+        "code": "desktop-file-validate \"${XDG_DATA_HOME:-$HOME/.local/share}/applications/lionclaw.desktop\"\n# Após ler a etapa Primeiro início:\ngtk-launch lionclaw",
+        "expected": "Validação desktop com exit 0. Ao abrir, janela LionClaw visível no compositor.",
+        "note": "O atalho depende do caminho da aplicação. Se mover a pasta, execute novamente a etapa menu com o novo --target. Registro do atalho não comprova que a janela abriu."
+      }
+    ]
+  },
+  {
+    "number": 11,
+    "id": "first-run",
+    "title": "Primeiro início",
+    "summary": "Abra conscientemente, preserve configurações e conclua o onboarding pessoalmente.",
+    "tui": "Abertura sempre pede confirmação. Antes dela, preserva config.toml do Codex se existir. O app pode criar perfil, migrar dados e baixar componentes. O instalador não digita credenciais.",
+    "sections": [
+      {
+        "heading": "Conhecer os efeitos do primeiro início",
+        "text": "Nesta revisão, o aplicativo cria ~/.lionclaw e pode sincronizar MCPs em ~/.codex/config.toml. O componente LionDesign também pode instalar dependências adicionais no primeiro início. O instalador não abre a aplicação ao terminar a instalação.",
+        "code": "\"$LIONCLAW_INSTALLER\" --step first-run --target \"$LIONCLAW_DIR\"",
+        "expected": "Confirmação explícita, backup privado de config.toml quando existente, e abertura. Feche a aplicação para voltar à TUI.",
+        "note": "Se já possui perfil LionClaw, feche a aplicação e faça uma cópia dele antes de abrir outra versão. A etapa não clona todo o perfil, nem apaga dados. Backups e relatórios ficam em ${XDG_STATE_HOME:-~/.local/state}/lionclaw-installer; não os publique sem revisar."
+      },
+      {
+        "heading": "Validar a janela separadamente",
+        "text": "No Hyprland, é possível consultar as janelas e confirmar classe, título e estado mapped. O teste local observou class=lionclaw, mapped=true e xwayland=true. Essa prova é diferente de olhar apenas o processo ou o log LionClaw ready.",
+        "code": "hyprctl clients -j",
+        "expected": "Uma janela LionClaw visível. Conclua a seleção de runtime e a autenticação no aplicativo.",
+        "note": "A validação publicada termina na abertura. Integrações, assinatura, permissões dos provedores e respostas de agentes dependem da sua conta e ainda não estão homologadas por este guia."
+      }
+    ]
+  },
+  {
+    "number": 12,
+    "id": "diagnosis",
+    "title": "Diagnóstico",
+    "summary": "Identifique a primeira falha e repita somente a etapa necessária.",
+    "tui": "GYP com Node 26: volte a node/dependencies. electron-rebuild ausente: dependencies falhou. ABI diferente: rebuild. 404: conta/convite/rede. Janela invisível: confira XWayland. Não use --no-sandbox.",
+    "sections": [
+      {
+        "heading": "Ler a causa, não apenas o último ERR",
+        "text": "O erro original foi better-sqlite3 12.6.2 compilando com Node 26.9.0: PropertyCallbackInfo sem membro This. O rebuild posterior retornou 127 porque a instalação anterior não havia disponibilizado electron-rebuild. Instalar Electron pelo pacman não resolveria essa cadeia.",
+        "code": "\"$LIONCLAW_INSTALLER\" --check --target \"$LIONCLAW_DIR\"\n\"$LIONCLAW_INSTALLER\" --verify-native --target \"$LIONCLAW_DIR\"",
+        "expected": "Diagnóstico explícito de requisitos e prova dos módulos. O modo --check não instala requisitos nem grava relatório."
+      },
+      {
+        "heading": "Repetir com limites",
+        "text": "Com acesso negado, confira a conta e o convite. Com erro npm, leia o primeiro erro no log local do npm. Com ABI divergente, repita rebuild. Com um arquivo de origem alterado, preserve o trabalho e escolha outro destino. O instalador para na primeira falha, não executa reset e não atualiza a revisão silenciosamente.",
+        "note": "As etapas executadas geram report.json com comandos e códigos de saída. O modo --install repete a sequência e recria dependências/build; não é um atualizador de versão. O menu é idempotente: conteúdo igual é preservado, conteúdo diferente recebe backup."
+      },
+      {
+        "heading": "Remoção e novas versões",
+        "text": "Para retirar do menu, remova apenas lionclaw.desktop e o launcher em lionclaw-omarchy dentro de XDG_DATA_HOME. A pasta da aplicação e os dados ~/.lionclaw são independentes; revise-os antes de remover. Este instalador não oferece exclusão automática. Uma nova revisão exige novo manifesto e nova validação.",
+        "note": "Ao abrir um issue público, remova tokens, nomes pessoais, caminhos privados e conteúdo de prompts. Não anexe o código oficial, logs completos do aplicativo ou backups de configuração."
+      }
+    ]
+  }
+]
