@@ -11,7 +11,8 @@
         "text": "Siga o guia manual ou execute as etapas pelo instalador no terminal. O acesso ao repositório oficial continua obrigatório. O nome oficial da aplicação usada neste guia é LionClaw.",
         "code": "./install.sh --check",
         "caption": "Verifica requisitos sem provisionar o sistema. Pode consultar o GitHub.",
-        "expected": "Cada requisito aparece como OK ou PENDENTE. Pendência não é aprovação nem erro a ignorar."
+        "expected": "Cada requisito aparece como OK ou PENDENTE. Pendência não é aprovação nem erro a ignorar.",
+        "note": "Atualização 1.1.0: correção do ditado F9 que aparecia como números e símbolos no Electron/XWayland. A etapa 11, Ditado F9, aplica o ajuste com backup em instalações existentes."
       },
       {
         "heading": "Começar pelo instalador",
@@ -226,6 +227,40 @@
   },
   {
     "number": 11,
+    "id": "dictation",
+    "title": "Ditado F9 (opcional)",
+    "summary": "Corrija texto convertido em números no Electron via XWayland.",
+    "tui": "Para quem já usa Voxtype. Copia o texto e cola pelo Hyprland 0.56, com backup e sem alterar modelo ou microfone. Reinicia somente se o serviço estiver ocioso. Não faz parte de A/--install. Confirme visualmente com F9 no LionClaw depois.",
+    "sections": [
+      {
+        "heading": "Atualizar quem já instalou",
+        "text": "Na pasta do instalador público lionclaw-omarchy, atualize o código e execute apenas esta etapa. Ajuste o destino à sua instalação. Se baixou ZIP, extraia a nova versão em uma pasta separada. Não é necessário reinstalar o aplicativo nem repetir npm/rebuild.",
+        "code": "git pull --ff-only\n./install.sh --step dictation --target /data/lionclaw",
+        "expected": "Versão 1.1.0 do instalador; correção aplicada com backup e instrução para conferir F9 no aplicativo."
+      },
+      {
+        "heading": "Aplicar a correção",
+        "text": "O reconhecimento produz texto correto, mas a digitação virtual pode chegar como números e símbolos. Esta etapa opcional usa clipboard e colagem nativa do Hyprland. Requer Voxtype configurado e ativo, wl-copy e Hyprland 0.56. Não instala modelo nem altera atalhos.",
+        "code": "\"$LIONCLAW_INSTALLER\" --step dictation --target \"$LIONCLAW_DIR\"",
+        "expected": "Backup criado; configuração e serviço conferidos. A última transcrição fica na área de transferência.",
+        "note": "A configuração afeta todos os aplicativos que recebem ditado. Comandos personalizados de pré/pós-saída são preservados e exigem integração manual. O instalador desativa auto_submit e recusa smart_auto_submit ativo."
+      },
+      {
+        "heading": "Confirmar no aplicativo",
+        "text": "Abra o LionClaw, foque uma mensagem vazia, segure F9 e diga “Olá, este é um teste de transcrição com acentos”. Solte F9 e confira antes de enviar. Repita em um terminal com um editor de texto aberto.",
+        "expected": "Texto legível, acentos preservados, inserido uma vez e sem envio automático.",
+        "note": "Configuração válida e serviço ativo não comprovam esse teste visual. Registre o resultado separadamente; a VM limpa continua não homologada."
+      },
+      {
+        "heading": "Diagnóstico e recuperação",
+        "text": "O diagnóstico apenas lê a configuração e o estado do serviço. Voxtype ausente é não aplicável. Se o ajuste falhar, o instalador tenta restaurar os arquivos e reiniciar o serviço anterior. Os backups ficam no diretório privado do relatório.",
+        "code": "\"$LIONCLAW_INSTALLER\" --check --target \"$LIONCLAW_DIR\"",
+        "expected": "O item dictation informa configuração conferida ou pendência; não grava configuração nem inicia gravação."
+      }
+    ]
+  },
+  {
+    "number": 12,
     "id": "first-run",
     "title": "Primeiro início",
     "summary": "Abra conscientemente, preserve configurações e conclua o onboarding pessoalmente.",
@@ -248,7 +283,7 @@
     ]
   },
   {
-    "number": 12,
+    "number": 13,
     "id": "diagnosis",
     "title": "Diagnóstico",
     "summary": "Identifique a primeira falha e repita somente a etapa necessária.",

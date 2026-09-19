@@ -16,6 +16,9 @@ import subprocess
 import sys
 import tempfile
 import textwrap
+import tomllib
+
+import dictation
 
 ROOT = Path(__file__).resolve().parent
 MANIFEST = json.loads((ROOT / 'manifest.json').read_text())
@@ -364,6 +367,84 @@ class Installer:
         print('Feche a janela para retornar ao instalador. Nenhuma chave será solicitada aqui.')
         self.command(self.node_command(str(self.target / 'node_modules/electron/dist/electron'), str(self.target)), cwd=self.target, env=env)
 
+    def dictation_paths(self):
+        config = Path(os.environ.get('XDG_CONFIG_HOME', str(Path.home() / '.config'))) / 'voxtype'
+        return config / 'config.toml', config / 'paste-hyprland.py'
+
+    def verify_dictation(self):
+        if not shutil.which('voxtype'):
+            return 'NÃO APLICÁVEL: Voxtype não instalado; ditado é opcional.'
+        config, helper = self.dictation_paths()
+        if not config.is_file():
+            raise InstallError('Voxtype sem configuração. Configure pelo Omarchy antes da etapa dictation.')
+        settings = tomllib.loads(config.read_text())
+        output = settings.get('output', {})
+        if (output.get('mode') != 'clipboard'
+                or output.get('post_output_command') != dictation.hook_command(helper)
+                or output.get('auto_submit', False)
+                or settings.get('text', {}).get('smart_auto_submit', False)
+                or not helper.is_file()
+                or helper.read_bytes() != (ROOT / 'voxtype-paste.py').read_bytes()):
+            raise InstallError('Ditado F9 requer revisão: execute --step dictation. Configuração atual preservada.')
+        self.command(['systemctl', '--user', 'is-active', '--quiet', 'voxtype'], capture=True, record=False)
+        return 'Configuração e serviço conferidos; teste visual F9 no LionClaw NÃO VERIFICADO.'
+
+    def dictation(self):
+        for tool in ('voxtype', 'wl-copy', 'hyprctl', 'systemctl'):
+            if not shutil.which(tool):
+                raise InstallError(f'{tool} ausente. Configure o ditado pelo Omarchy antes desta etapa opcional.')
+        version = self.command(['hyprctl', 'version', '-j'], capture=True)
+        if not str(json.loads(version.stdout).get('version', '')).lstrip('v').startswith('0.56.'):
+            raise InstallError('Colagem validada no Hyprland 0.56; confira compatibilidade antes de adaptar.')
+        help_text = self.command(['voxtype', '--help'], capture=True).stdout
+        if '--post-output-command' not in help_text:
+            raise InstallError('Voxtype instalado não oferece post_output_command.')
+        self.command(['systemctl', '--user', 'is-active', '--quiet', 'voxtype'], capture=True)
+        config, helper = self.dictation_paths()
+        if not config.is_file():
+            raise InstallError('Configure primeiro o Voxtype pelo Omarchy; modelo e microfone serão preservados.')
+        for path in (config, helper):
+            if path.is_symlink() or path.parent.resolve() != path.parent:
+                raise InstallError('Configuração por symlink preservada; requer integração manual.')
+        original = config.read_text()
+        try:
+            candidate = dictation.configure(original, helper)
+        except ValueError as exc:
+            raise InstallError(str(exc)) from exc
+        content = (ROOT / 'voxtype-paste.py').read_text()
+        if original == candidate and helper.is_file() and helper.read_text() == content:
+            print(self.verify_dictation())
+            return
+        print('Ajuste global do Voxtype: clipboard + colagem Hyprland; última transcrição fica no clipboard.')
+        print('Modelo, idioma e microfone preservados. Envio automático será desativado.')
+        self.confirm('Aplicar com backup e reiniciar somente o Voxtype ocioso?')
+        if self.command(['voxtype', 'status'], capture=True).stdout.strip() != 'idle':
+            raise InstallError('Voxtype ocupado ou parado. Termine a gravação e repita; nada foi alterado.')
+        old_helper = helper.read_text() if helper.exists() else None
+        old_mode = helper.stat().st_mode & 0o777 if helper.exists() else 0o644
+        config_mode = config.stat().st_mode & 0o777
+        try:
+            self.write_backed_up(helper, content)
+            self.write_backed_up(config, candidate, config_mode)
+            self.command(['systemctl', '--user', 'restart', 'voxtype'])
+            resolved = self.command(['voxtype', 'config', 'get', 'output.mode'], capture=True)
+            if resolved.stdout.strip() != 'clipboard':
+                raise InstallError('Voxtype não resolveu output.mode como clipboard.')
+            print(self.verify_dictation())
+        except BaseException:
+            # Restaura a configuração desta tentativa, inclusive quando havia backup anterior.
+            self.write_backed_up(config, original, config_mode)
+            if old_helper is None:
+                helper.unlink(missing_ok=True)
+            else:
+                self.write_backed_up(helper, old_helper, old_mode)
+            self.command(['systemctl', '--user', 'restart', 'voxtype'], check=False)
+            print('Configuração anterior restaurada. Consulte o relatório e o estado do serviço.')
+            raise
+        self.report['dictation'] = {'configuration': 'PASSED', 'visual_f9': 'NOT_VERIFIED'}
+        self.save_report()
+        print('Agora dite no LionClaw com F9, sem enviar; confira texto e acentos. Repita no terminal.')
+
     def check(self):
         rows = []
         def probe(name, call):
@@ -382,6 +463,7 @@ class Installer:
         probe('node', self.verify_node)
         probe('source', self.verify_source)
         probe('build', self.verify_build)
+        probe('dictation', self.verify_dictation)
         print(json.dumps({'target': str(self.target), 'checks': rows}, ensure_ascii=False, indent=2))
         return 0 if all(r['status'] == 'OK' for r in rows) else 2
 
@@ -417,6 +499,7 @@ class Installer:
         self.confirm('Executar a sequência até registrar o menu? O aplicativo não será aberto.')
         for identifier in SEQUENCE:
             self.step(identifier)
+        print('Se usar F9/Voxtype, execute a etapa opcional: --step dictation.')
 
     def tui(self):
         if not sys.stdin.isatty() or not sys.stdout.isatty():
@@ -440,8 +523,8 @@ class Installer:
                         except curses.error:
                             pass
                 put(0, 2, 'LionClaw / Omarchy — instalador comunitário', curses.A_BOLD)
-                if w < 78 or h < 20:
-                    put(3, 2, 'Amplie o terminal para 78 × 20. Q sai; --plan funciona em qualquer tamanho.')
+                if w < 78 or h < 21:
+                    put(3, 2, 'Amplie o terminal para 78 × 21. Q sai; --plan funciona em qualquer tamanho.')
                 else:
                     for i, step in enumerate(STEPS):
                         history = [row for row in self.report['steps'] if row['id'] == step['id']]

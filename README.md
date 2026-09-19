@@ -20,7 +20,7 @@ O código oficial está em [LionLabsCommunity/lionclawv1.0](https://github.com/L
 
 ## Começar
 
-Leia os arquivos antes de executar. Não requer bibliotecas Python externas.
+Leia os arquivos antes de executar. Requer Python 3.11+ e não usa bibliotecas Python externas.
 
 ```bash
 git clone https://github.com/aiob3/lionclaw-omarchy.git
@@ -38,7 +38,20 @@ mkdir -p "$HOME/Applications"
 ./install.sh --target "$HOME/Applications/lionclaw"
 ```
 
-Na TUI: **↑↓** selecionam, **Enter** executa a etapa, **A** instala a sequência, **C** verifica requisitos, **Q** sai. Requer terminal de pelo menos 78 × 20; há CLI para terminais menores e automação.
+Na TUI: **↑↓** selecionam, **Enter** executa a etapa, **A** instala a sequência, **C** verifica requisitos, **Q** sai. Requer terminal de pelo menos 78 × 21; há CLI para terminais menores e automação.
+
+## Primeira atualização — v1.1.0: ditado F9
+
+Corrigido o bug em que o ditado chegava ao Electron/XWayland como números e símbolos. A etapa opcional **Ditado F9** aplica a colagem nativa do Hyprland com backup. [Notas da versão](https://github.com/aiob3/lionclaw-omarchy/releases/tag/v1.1.0) · [Como funciona e como reverter](docs/DITADO-F9.md).
+
+Para quem já instalou, execute na pasta do **instalador público**:
+
+```bash
+git pull --ff-only
+./install.sh --step dictation --target /data/lionclaw
+```
+
+Ajuste `--target` ao destino existente. Quem usa ZIP pode extrair a nova versão em outra pasta e executar a mesma etapa. Não é necessário reinstalar o LionClaw nem repetir npm/rebuild. Requer Voxtype configurado e Hyprland 0.56. Depois, confirme o texto com F9 no aplicativo antes de enviar. A última transcrição fica na área de transferência.
 
 ## Modos
 
@@ -51,6 +64,7 @@ Na TUI: **↑↓** selecionam, **Enter** executa a etapa, **A** instala a sequê
 ./install.sh --step dependencies           # npm ci + postinstall
 ./install.sh --step rebuild                # recompilar e testar módulos
 ./install.sh --verify-native               # SQLite/PTY; não abre o app
+./install.sh --step dictation              # correção opcional F9/Voxtype, com backup
 ./install.sh --step first-run              # backup de config e abertura consentida
 ```
 
@@ -72,6 +86,14 @@ Passe `--target` em cada chamada se o destino não for o padrão. `--yes` confir
 | Primeiro início | Abertura separada com confirmação | janela visível; login fica com o usuário |
 
 Electron vem do npm do projeto, não de pacman/yay. Ferramentas já presentes por mise ou pacotes alternativos são reaproveitadas. Se pacman falhar por bases/espelhos desatualizados, atualize o Omarchy pelo fluxo normal antes de repetir; não execute `pacman -Sy` isoladamente.
+
+## Ditado F9 no Electron/XWayland
+
+A etapa opcional **Ditado F9** está disponível na TUI e em `--step dictation`; `--install` continua instalando até o menu. O diagnóstico inclui o item `dictation`. Voxtype ausente é não aplicável, sem impedir a instalação do LionClaw.
+
+A correção substitui digitação virtual por `mode = "clipboard"` e um `post_output_command` que cola pelo Hyprland 0.56, com Ctrl+V em aplicativos e Shift+Insert em terminais. Faz backup, preserva modelo/idioma/microfone, recusa hooks personalizados e serviço ocupado, desativa envio automático e tenta reverter se houver falha. A última transcrição permanece no clipboard. Não cria nem altera o atalho F9 do Omarchy.
+
+Leia o [diagnóstico, evidências e reversão](docs/DITADO-F9.md). Depois de aplicar, teste F9 no LionClaw e em um editor no terminal; a aprovação da etapa atesta configuração e serviço, não a interação visual.
 
 ## Revisão validada e limites
 

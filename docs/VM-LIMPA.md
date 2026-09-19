@@ -33,6 +33,7 @@ Faça a captura **depois de verificar o resultado**, usando a tela real da VM. S
 | `13-interface-principal.png` | Interface principal renderizada após concluir o onboarding autorizado |
 | `14-terminal-funcionando.png` | Terminal integrado executando um comando inofensivo, por exemplo printf LIONCLAW_VM_OK |
 | `15-reabertura.png` | Aplicação fechada e reaberta pelo menu, interface novamente renderizada |
+| `16-ditado-f9.png` | Quando Voxtype estiver configurado: frase ditada com F9 no LionClaw, acentos, sem envio automático; registrar também o resultado no terminal |
 
 Capture também cada erro intermediário e sua correção, por exemplo `08a-rebuild-falhou.png` e `08b-rebuild-corrigido.png`. Se outros procedimentos ou recursos forem exercitados, adicione imagens correspondentes e registre exatamente o que foi verificado.
 

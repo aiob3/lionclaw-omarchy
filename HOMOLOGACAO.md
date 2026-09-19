@@ -90,3 +90,29 @@ Navegador real (Chrome conectado): navegação desktop, duas colunas, seleção 
 Se for realizado um ensaio em VM limpa, seguir obrigatoriamente o [protocolo de capturas por etapa](docs/VM-LIMPA.md). Ele exige imagens reais numeradas, inclusive da aplicação funcionando, primeira abertura pelo menu, interface, terminal integrado e reabertura, com resultados e SHA-256. Esse ensaio permanece **NÃO EXECUTADO**.
 
 Atualizar explicitamente manifest.json, rever requisitos e efeitos de primeiro boot, passar testes do instalador, instalar a revisão em ambiente de ensaio, validar módulos, build, menu e janela. Registrar separadamente os recursos funcionais exercitados. Publicar nova versão do instalador somente com evidência correspondente.
+
+## Adendo: correção do ditado F9 (versão 1.1.0)
+
+O diagnóstico, a mudança de configuração e seus limites estão em
+[docs/DITADO-F9.md](docs/DITADO-F9.md). A entrega de texto via `wtype` foi
+reproduzida como números no Electron 33.4.11/XWayland; a colagem nativa
+do Hyprland preservou a frase e os acentos. O helper empacotado também foi
+executado na janela isolada com resultado exato: `pass: true`.
+
+Comando `python3 -m unittest discover -s tests -v`: **36 testes / 36 aprovados**,
+exit 0 (23 anteriores + 13 do ditado). As novas provas cobrem preservação do
+TOML, backup, repetição, recusa de gravação ativa e hooks personalizados,
+rollback, caminhos com metacaracteres, diagnóstico sem escrita, opcionalidade,
+symlinks e eventos de pressionamento/liberação para aplicativos e terminais.
+Sintaxe Python/Bash/JavaScript e `--plan`: exit 0. TUI exercitada em
+pseudo-terminal 80 × 24: seleção da etapa 11 por setas e saída Q com exit 0.
+Resultados sem dados pessoais
+em [evidence/dictation-20260919.json](evidence/dictation-20260919.json).
+
+O guia e a TUI passam a compartilhar 13 etapas; ditado é opcional e fica fora
+da sequência obrigatória de instalação. Serviço e configuração aprovados não
+equivalem a texto visualmente conferido no LionClaw. F9 no aplicativo real e
+no terminal: **NÃO VERIFICADO** neste registro. VM limpa: **NÃO EXECUTADO**.
+As evidências da versão anterior acima descrevem aquela rodada e não são
+ampliadas por este adendo. A versão 1.1.0 distribui a correção e seu procedimento
+de verificação; consulte também as notas da release pública.

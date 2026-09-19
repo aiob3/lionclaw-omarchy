@@ -1,0 +1,66 @@
+{
+  "date": "2026-09-19",
+  "scope": "Janela isolada com Electron do LionClaw, via XWayland; texto sintético, sem áudio ou conversa pessoal.",
+  "electron": "33.4.11",
+  "before": [
+    {
+      "method": "type",
+      "expected": "Olá, transcrição com acentuação: 123 + 45.",
+      "actual": "12345678906-q470w85e7",
+      "pass": false,
+      "xwayland": true
+    },
+    {
+      "method": "ctrl+v",
+      "expected": "Olá, transcrição com acentuação: 123 + 45.",
+      "actual": "",
+      "pass": false,
+      "xwayland": true
+    },
+    {
+      "method": "shift+insert",
+      "expected": "Olá, transcrição com acentuação: 123 + 45.",
+      "actual": "",
+      "pass": false,
+      "xwayland": true
+    }
+  ],
+  "after": [
+    {
+      "method": "hypr-ctrl+v",
+      "expected": "Olá, transcrição com acentuação: 123 + 45.",
+      "actual": "Olá, transcrição com acentuação: 123 + 45.",
+      "pass": true,
+      "xwayland": true
+    },
+    {
+      "method": "hypr-shift+insert",
+      "expected": "Olá, transcrição com acentuação: 123 + 45.",
+      "actual": "Olá, transcrição com acentuação: 123 + 45.",
+      "pass": true,
+      "xwayland": true
+    }
+  ],
+  "lionclaw_visual_f9": "NOT_VERIFIED",
+  "clean_vm": "NOT_EXECUTED",
+  "notes": [
+    "Logs locais após a correção registraram post_output hook completed successfully.",
+    "Conclusão limitada à entrega do texto na janela isolada; logs não provam conteúdo exibido no LionClaw."
+  ],
+  "packaged_helper": [
+    {
+      "method": "packaged-helper",
+      "expected": "Olá, transcrição com acentuação: 123 + 45.",
+      "actual": "Olá, transcrição com acentuação: 123 + 45.",
+      "pass": true,
+      "xwayland": true
+    }
+  ],
+  "automated_tests": {
+    "command": "python3 -m unittest discover -s tests -v",
+    "passed": 36,
+    "total": 36,
+    "exit": 0
+  },
+  "helper_sha256": "d7d91f2177cc9b0db0c93e46b0acec7f128b653dafbb509db0f8cb5aef7dd786"
+}

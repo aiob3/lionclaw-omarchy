@@ -181,7 +181,7 @@ class InstallerTests(unittest.TestCase):
         self.assertIsNone(self.app.run_dir)
 
     def test_steps_are_shared_and_cover_sequence(self):
-        self.assertEqual(len(mod.STEPS), 12)
+        self.assertEqual(len(mod.STEPS), 13)
         ids = [s['id'] for s in mod.STEPS]
         self.assertEqual(len(ids), len(set(ids)))
         self.assertTrue(set(mod.SEQUENCE).issubset(ids))
