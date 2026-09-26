@@ -49,7 +49,7 @@ Desde a versão **1.1.2**, o atalho do menu e o primeiro início abrem o LionCla
 
 A instalação **não altera o Voxtype**. A etapa **Ditado F9** da 1.1.0/1.1.1, que trocava a digitação por colagem, saiu da sequência. Quem a aplicou pode voltar ao modo digitar: veja [Reversão manual](docs/DITADO-F9.md#reversão-manual) e depois rode `./install.sh --step menu`.
 
-[Notas da versão](CHANGELOG.md) · [Registro da homologação](HOMOLOGACAO.md).
+[Antes e depois, com imagens e vídeo](https://aiob3.github.io/lionclaw-omarchy/homologacao-3-9.html) · [Notas da versão](CHANGELOG.md) · [Registro da homologação](HOMOLOGACAO.md).
 
 ## Modos
 
