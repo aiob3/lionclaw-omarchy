@@ -207,7 +207,7 @@
     "number": 10,
     "id": "menu",
     "title": "Menu de aplicativos",
-    "summary": "Registre o atalho LionClaw com ícone, Node fixado e XWayland.",
+    "summary": "Registre o atalho LionClaw com ícone, Node fixado e Wayland nativo.",
     "tui": "Cria launcher do usuário e lionclaw.desktop. Faz backup de arquivos anteriores, valida o candidato e atualiza o cadastro desktop. Não abre a aplicação automaticamente.",
     "sections": [
       {
@@ -218,50 +218,36 @@
       },
       {
         "heading": "Entender o comando de abertura",
-        "text": "O launcher escolhe Node 24, NODE_ENV=production e ELECTRON_OZONE_PLATFORM_HINT=x11. Na validação local, a execução Wayland iniciou processos mas não apresentou janela; XWayland resultou em janela mapeada. Isso não significa que Wayland falhe em todas as máquinas.",
+        "text": "O launcher escolhe Node 24, NODE_ENV=production, ELECTRON_OZONE_PLATFORM_HINT=wayland e LIONCLAW_ENABLE_HARDWARE_ACCELERATION=1, a chave do próprio LionClaw. Sem ela, o app desliga a aceleração no Linux e, no Wayland nativo, a janela não chega a aparecer. Nativo no Wayland, o LionClaw recebe a digitação do Voxtype como qualquer outro aplicativo e respeita a escala do monitor; por XWayland, o ditado chegava como números e a interface dobrava de tamanho com o GDK_SCALE=2 do Omarchy.",
         "code": "desktop-file-validate \"${XDG_DATA_HOME:-$HOME/.local/share}/applications/lionclaw.desktop\"\n# Após ler a etapa Primeiro início:\ngtk-launch lionclaw",
         "expected": "Validação desktop com exit 0. Ao abrir, janela LionClaw visível no compositor.",
-        "note": "O atalho depende do caminho da aplicação. Se mover a pasta, execute novamente a etapa menu com o novo --target. Registro do atalho não comprova que a janela abriu."
+        "note": "O atalho depende do caminho da aplicação. Se mover a pasta, execute novamente a etapa menu com o novo --target. Registro do atalho não comprova que a janela abriu. A aceleração foi validada nesta estação; em outra GPU, registre o resultado."
       }
     ]
   },
   {
     "number": 11,
     "id": "dictation",
-    "title": "Compatibilidade F9",
-    "summary": "Prepare o ditado para o Electron/XWayland durante a primeira instalação.",
-    "tui": "Incluída em A/--install. Com Voxtype configurado, aplica colagem Hyprland com backup e preserva modelo/microfone. Voxtype ausente: NÃO APLICÁVEL, sem bloquear LionClaw. Depois de habilitar voz pelo Omarchy, repita esta etapa. Confira F9 visualmente após abrir o app.",
+    "title": "Ditado F9 (legado)",
+    "summary": "Não é mais necessária: no Wayland nativo o Voxtype digita no LionClaw sem ajuste.",
+    "tui": "Fora da sequência desde a 1.1.2. Não execute em instalações novas: ela troca a digitação do Voxtype por colagem. Quem aplicou na 1.1.0/1.1.1 pode voltar ao modo digitar pelos backups (ver seção Reverter).",
     "sections": [
       {
-        "heading": "Incluída desde a primeira instalação",
-        "text": "Ao começar pelo instalador, use a tecla A na TUI ou --install. Depois de registrar o menu, a sequência prepara o ditado F9 quando Voxtype já estiver configurado no Omarchy. A abertura do aplicativo continua sendo uma etapa separada.",
-        "code": "git clone https://github.com/aiob3/lionclaw-omarchy.git\ncd lionclaw-omarchy\n./install.sh",
-        "expected": "A sequência inclui Compatibilidade F9; não é necessário procurar uma correção separada após instalar."
+        "heading": "Por que saiu da instalação",
+        "text": "Pelo XWayland, a digitação virtual do Voxtype chegava ao LionClaw como números e símbolos, e a 1.1.0 contornava isso trocando o Voxtype para colar. Desde a 1.1.2 o LionClaw abre nativo no Wayland e recebe a digitação como os demais aplicativos. O modo do Voxtype que o sistema usa fica como está.",
+        "expected": "Instalação nova não altera o Voxtype."
       },
       {
-        "heading": "Executar ou repetir apenas esta etapa",
-        "text": "O reconhecimento produz texto correto, mas a digitação virtual pode chegar como números e símbolos. A instalação já inclui a entrega por clipboard e colagem nativa do Hyprland. Para repetir somente esta etapa, use o comando abaixo. Requer Voxtype configurado e ativo, wl-copy e Hyprland 0.56.",
-        "code": "\"$LIONCLAW_INSTALLER\" --step dictation --target \"$LIONCLAW_DIR\"",
-        "expected": "Backup criado; configuração e serviço conferidos. A última transcrição fica na área de transferência.",
-        "note": "A configuração afeta todos os aplicativos que recebem ditado. Comandos personalizados de pré/pós-saída são preservados e exigem integração manual. O instalador desativa auto_submit e recusa smart_auto_submit ativo."
-      },
-      {
-        "heading": "Quando o ditado ainda não está instalado",
-        "text": "A instalação do LionClaw continua sem voz e o relatório registra NÃO APLICÁVEL. Para usar F9, configure primeiro o Voxtype pelo fluxo do Omarchy, escolhendo modelo, idioma e microfone; depois execute a etapa dictation.",
-        "code": "\"$LIONCLAW_INSTALLER\" --step dictation --target \"$LIONCLAW_DIR\"",
-        "expected": "A etapa aplica a compatibilidade quando o Voxtype estiver ativo e ocioso. Não baixa modelos nem marca voz ausente como teste aprovado."
+        "heading": "Reverter o ajuste da 1.1.0/1.1.1",
+        "text": "Com o Voxtype ocioso, restaure config.toml a partir do backup .before criado pela etapa (diretório do relatório), ou defina mode = \"type\" em [output] e remova a linha post_output_command. Depois reinicie o serviço e atualize o atalho com a etapa menu.",
+        "code": "systemctl --user restart voxtype\n\"$LIONCLAW_INSTALLER\" --step menu --target \"$LIONCLAW_DIR\"",
+        "expected": "voxtype config get output.mode responde type; o ditado aparece correto no LionClaw aberto pelo menu.",
+        "note": "Detalhes e caminhos dos backups em docs/DITADO-F9.md, seção Reversão manual."
       },
       {
         "heading": "Confirmar no aplicativo",
-        "text": "Abra o LionClaw, foque uma mensagem vazia, segure F9 e diga “Olá, este é um teste de transcrição com acentos”. Solte F9 e confira antes de enviar. Repita em um terminal com um editor de texto aberto.",
-        "expected": "Texto legível, acentos preservados, inserido uma vez e sem envio automático.",
-        "note": "Configuração válida e serviço ativo não comprovam esse teste visual. Registre o resultado separadamente; a VM limpa continua não homologada."
-      },
-      {
-        "heading": "Diagnóstico e recuperação",
-        "text": "O diagnóstico apenas lê a configuração e o estado do serviço. Voxtype ausente é não aplicável. Se o ajuste falhar, o instalador tenta restaurar os arquivos e reiniciar o serviço anterior. Os backups ficam no diretório privado do relatório.",
-        "code": "\"$LIONCLAW_INSTALLER\" --check --target \"$LIONCLAW_DIR\"",
-        "expected": "O item dictation informa configuração conferida ou pendência; não grava configuração nem inicia gravação."
+        "text": "Abra o LionClaw pelo menu, foque uma mensagem vazia e dite “Olá, será que estamos funcionando agora?”. Confira antes de enviar.",
+        "expected": "Texto legível, acentos e pontuação preservados, inserido uma vez."
       }
     ]
   },

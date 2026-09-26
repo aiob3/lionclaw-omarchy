@@ -80,7 +80,7 @@ Navegador real (Chrome conectado): navegação desktop, duas colunas, seleção 
 ## Limites de homologação
 
 - Login, keychain completo, provedores, cobrança, assinaturas, ferramentas de agentes, pipelines e todos os MCPs em uso real: **não homologados**.
-- ARM, outras distros, outras revisões, GPUs e sessões Wayland nativas: **não homologados**.
+- ARM, outras distros, outras revisões e outras GPUs: **não homologados**. Wayland nativo: ver o adendo 1.1.2.
 - Pacotes npm possuem suas próprias condições de manutenção. A revisão fixada não significa atualização de segurança automática nem auditoria integral de dependências.
 - O primeiro início do app pode criar perfil, migrar dados, sincronizar MCPs no Codex e baixar dependências do LionDesign. O instalador informa isso e não abre o aplicativo automaticamente.
 - Relatórios, logs e backups originais são locais. Nenhum código privado, credencial ou conteúdo pessoal foi necessário para compor este registro público.
@@ -132,3 +132,46 @@ ajuste com Voxtype presente e registra não aplicabilidade sem escrever a
 configuração quando ele está ausente. São cenários simulados, não instalação
 em VM limpa. A prova real anterior do helper continua limitada à janela
 isolada Electron/XWayland; este adendo não amplia sua homologação visual.
+
+## Adendo: LionClaw nativo no Wayland (1.1.2)
+
+Data: **26 de setembro de 2026**. Omarchy 4.0.4 recém-reinstalado, Hyprland 0.56.2,
+monitores em escala 1 (3440 × 1440 e 2560 × 1080). LionClaw **3.9.0**
+(`b0907f73359f2f249613dd0671516f0657a1f1ae`) instalado do zero conforme o README
+oficial, com Node 24.11.1, e aberto por `npm run dev`. Voxtype 1.0.1 em
+`mode = "type"` (wtype), sem alteração.
+
+### Dois defeitos com a mesma causa: XWayland
+
+| Execução | Resultado |
+|---|---|
+| `ELECTRON_OZONE_PLATFORM_HINT=x11` | janela por XWayland com a interface no dobro do tamanho: o Omarchy exporta `GDK_SCALE=2` para a sessão; ditado "Olá, será que estamos funcionando agora?" chegou como `121345672153819370-=1` (relato do operador) |
+| x11 com `GDK_SCALE=1` | tamanho normal (confirmado pelo operador); não corrige o ditado |
+| `ELECTRON_OZONE_PLATFORM_HINT=wayland` | processos, renderer e MCPs ativos; **nenhuma janela** no compositor (mesmo resultado da 3.8.0 acima) |
+| `wayland` + `LIONCLAW_ENABLE_HARDWARE_ACCELERATION=1` | janela `lionclaw` com `xwayland: false`; processo gráfico com `--ozone-platform=wayland` e sem `--disable-gpu`; tamanho normal e ditado correto no modo digitar (confirmados pelo operador) |
+
+Causa do ditado: o wtype troca o mapa do teclado a cada caractere; aplicativos
+Wayland seguem a troca, mas o XWayland interpreta os códigos pelo teclado real,
+o que produz a fileira de números.
+
+Causa da janela ausente: no Linux o LionClaw chama `app.disableHardwareAcceleration()`
+(desde a v3.0) e cria a janela com `show: false`, exibindo-a no `ready-to-show`.
+No Wayland nativo sem aceleração, a janela oculta não chegou a ser exibida. A chave
+`LIONCLAW_ENABLE_HARDWARE_ACCELERATION=1` já existe no código oficial, também na
+revisão 3.8.0 fixada, e desliga esse comportamento sem alterar o repositório.
+Registramos que ela reativa um recurso que os autores desativaram por padrão:
+a aceleração foi validada somente nesta GPU.
+
+### Mudança do instalador
+
+O atalho do menu e o primeiro início passam a usar `ELECTRON_OZONE_PLATFORM_HINT=wayland`
+e `LIONCLAW_ENABLE_HARDWARE_ACCELERATION=1`. A etapa `dictation`, que trocava o
+Voxtype para colagem (1.1.0/1.1.1), sai da sequência de instalação e do diagnóstico:
+a instalação não altera mais o Voxtype. A intenção dos testes de fluxo mudou de
+acordo: agora eles exigem que a instalação termine no menu sem tocar no Voxtype.
+`python3 -m unittest discover -s tests -q`: **40 testes, OK, exit 0** (38 anteriores
+e 2 que conferem o ambiente do launcher e do primeiro início).
+
+Limites: a confirmação visual foi feita na execução de desenvolvimento da 3.9.0.
+Build de produção, abertura pelo atalho do menu e manifest fixado na 3.9.0:
+**NÃO VERIFICADO** neste adendo; ficam para a atualização da revisão fixada.

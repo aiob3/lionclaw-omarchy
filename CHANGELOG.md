@@ -1,5 +1,21 @@
 # Histórico de versões
 
+## 1.1.2 — 26/09/2026
+
+**LionClaw nativo no Wayland.** O atalho do menu e o primeiro início abrem o LionClaw com `ELECTRON_OZONE_PLATFORM_HINT=wayland` e a chave oficial do app `LIONCLAW_ENABLE_HARDWARE_ACCELERATION=1`. Dois defeitos do XWayland somem juntos:
+
+- **Ditado:** o Voxtype, no modo digitar de sempre, chega ao LionClaw como texto, e não mais como `121345672153819370-=1`.
+- **Escala:** letras e textos no tamanho certo; o `GDK_SCALE=2` do Omarchy dobrava a interface.
+
+**A instalação não altera mais o Voxtype.** A etapa Ditado F9, que trocava a digitação por colagem, saiu da sequência e do diagnóstico. Quem a aplicou na 1.1.0/1.1.1 pode voltar ao modo digitar pela [reversão manual](docs/DITADO-F9.md#reversão-manual) e atualizar o atalho:
+
+```bash
+git pull --ff-only
+./install.sh --step menu --target /data/lionclaw
+```
+
+**Validação:** 40 testes aprovados. Janela nativa, tamanho e ditado confirmados pelo operador no LionClaw 3.9.0 em execução de desenvolvimento. Abertura pelo menu com a revisão fixada: não verificada nesta versão. Detalhes no [adendo da homologação](HOMOLOGACAO.md#adendo-lionclaw-nativo-no-wayland-112).
+
 ## 1.1.1 — 19/09/2026
 
 O instalador publicado no lançamento de hoje já inclui a correção do ditado F9 no fluxo de **primeira instalação** do LionClaw no Omarchy.

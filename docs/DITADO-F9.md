@@ -1,5 +1,7 @@
 # Ditado F9: números e símbolos no Electron via XWayland
 
+> **Legado desde a 1.1.2.** O LionClaw agora abre nativo no Wayland e recebe a digitação do Voxtype sem ajuste. Este documento fica como diagnóstico e para a [reversão](#reversão-manual) de quem aplicou a 1.1.0/1.1.1.
+
 ## Diagnóstico observado em 19/09/2026
 
 O F9 do Omarchy acionava o Voxtype corretamente. O reconhecimento Whisper

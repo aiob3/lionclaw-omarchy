@@ -168,6 +168,30 @@ class InstallerTests(unittest.TestCase):
         self.assertIn('Exec="', text)
         self.assertNotIn('sh -c', text)
 
+    def test_launcher_uses_native_wayland(self):
+        for name in ('verify_source', 'verify_build', 'native_check'):
+            setattr(self.app, name, Mock())
+        self.app.command = Mock(return_value=result())
+        data = self.root / 'data'
+        with patch.dict(mod.os.environ, {'XDG_DATA_HOME': str(data)}), \
+             patch.object(mod.shutil, 'which', return_value='/usr/bin/mise'):
+            self.app.menu()
+        script = (data / 'lionclaw-omarchy/launch.sh').read_text()
+        head = script[:script.index('exec ')]
+        self.assertIn('export ELECTRON_OZONE_PLATFORM_HINT=wayland\n', head)
+        self.assertIn('export LIONCLAW_ENABLE_HARDWARE_ACCELERATION=1\n', head)
+        self.assertNotIn('x11', script)
+
+    def test_first_run_uses_native_wayland(self):
+        for name in ('verify_source', 'verify_build', 'native_check', 'confirm'):
+            setattr(self.app, name, Mock())
+        self.app.command = Mock(return_value=result())
+        with patch.dict(mod.os.environ, {'CODEX_HOME': str(self.root / 'codex')}):
+            self.app.first_run()
+        env = self.app.command.call_args.kwargs['env']
+        self.assertEqual(env['ELECTRON_OZONE_PLATFORM_HINT'], 'wayland')
+        self.assertEqual(env['LIONCLAW_ENABLE_HARDWARE_ACCELERATION'], '1')
+
     def test_native_probe_does_not_launch_application(self):
         electron = self.app.target / 'node_modules/electron/dist/electron'
         electron.parent.mkdir(parents=True)

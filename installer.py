@@ -23,8 +23,13 @@ import dictation
 ROOT = Path(__file__).resolve().parent
 MANIFEST = json.loads((ROOT / 'manifest.json').read_text())
 STEPS = json.loads((ROOT / 'docs' / 'steps.json').read_text())
+# dictation fica fora da sequência desde a 1.1.2: no Wayland nativo o Voxtype digita sem ajuste.
 SEQUENCE = ['environment', 'packages', 'access', 'node', 'source',
-            'dependencies', 'rebuild', 'build', 'menu', 'dictation']
+            'dependencies', 'rebuild', 'build', 'menu']
+# O LionClaw desliga a aceleração no Linux e só mostra a janela no ready-to-show; no Wayland
+# nativo a janela oculta nunca desenha. A chave oficial do app reativa a aceleração.
+APP_ENV = {'NODE_ENV': 'production', 'ELECTRON_OZONE_PLATFORM_HINT': 'wayland',
+           'LIONCLAW_ENABLE_HARDWARE_ACCELERATION': '1'}
 # Comandos existentes são aceitos mesmo quando vieram de mise/bin ou pacote alternativo.
 COMMAND_PACKAGES = {'git': 'git', 'gh': 'github-cli', 'mise': 'mise',
                     'python3': 'python', 'make': 'base-devel', 'gcc': 'base-devel',
@@ -331,7 +336,7 @@ class Installer:
         mise = shutil.which('mise')
         if not mise:
             raise InstallError('mise ausente.')
-        env = 'unset ELECTRON_RUN_AS_NODE\nexport NODE_ENV=production\nexport ELECTRON_OZONE_PLATFORM_HINT=x11\n'
+        env = 'unset ELECTRON_RUN_AS_NODE\n' + ''.join(f'export {k}={v}\n' for k, v in APP_ENV.items())
         command = [mise, 'exec', 'node@' + MANIFEST['node'], '--',
                    str(self.target / 'node_modules/electron/dist/electron'), str(self.target)]
         script = '#!/usr/bin/env bash\nset -euo pipefail\n' + env
@@ -362,7 +367,7 @@ class Installer:
                 shutil.copy2(config, backup)
             backup.chmod(0o600)
             print('Backup privado da configuração Codex: ' + str(backup))
-        env = dict(os.environ, NODE_ENV='production', ELECTRON_OZONE_PLATFORM_HINT='x11')
+        env = dict(os.environ, **APP_ENV)
         env.pop('ELECTRON_RUN_AS_NODE', None)
         print('Feche a janela para retornar ao instalador. Nenhuma chave será solicitada aqui.')
         self.command(self.node_command(str(self.target / 'node_modules/electron/dist/electron'), str(self.target)), cwd=self.target, env=env)
@@ -470,7 +475,6 @@ class Installer:
         probe('node', self.verify_node)
         probe('source', self.verify_source)
         probe('build', self.verify_build)
-        probe('dictation', self.verify_dictation)
         print(json.dumps({'target': str(self.target), 'checks': rows}, ensure_ascii=False, indent=2))
         return 0 if all(r['status'] == 'OK' for r in rows) else 2
 
@@ -506,7 +510,7 @@ class Installer:
 
     def install(self):
         self.show_plan()
-        self.confirm('Instalar o LionClaw, registrar o menu e configurar a compatibilidade F9? O aplicativo não será aberto.')
+        self.confirm('Instalar o LionClaw e registrar o menu? O aplicativo não será aberto.')
         for identifier in SEQUENCE:
             self.step(identifier)
 

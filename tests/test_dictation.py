@@ -118,15 +118,17 @@ class DictationTests(unittest.TestCase):
         self.assertFalse(self.helper.exists())
         self.assertEqual(self.calls, [])
 
-    def test_fresh_install_includes_dictation_before_first_launch(self):
+    def test_fresh_install_leaves_voxtype_alone(self):
+        # 1.1.2: o app nativo no Wayland recebe a digitação do Voxtype; a instalação não o altera.
         self.app.show_plan = Mock()
         self.app.step = Mock()
         self.app.install()
         executed = [c.args[0] for c in self.app.step.call_args_list]
-        self.assertEqual(executed[-2:], ['menu', 'dictation'])
+        self.assertEqual(executed[-1], 'menu')
+        self.assertNotIn('dictation', executed)
         self.assertNotIn('first-run', executed)
 
-    def test_fresh_install_applies_dictation_with_voxtype(self):
+    def test_manual_dictation_step_still_applies_with_voxtype(self):
         self.app.environment = Mock()
         self.app.step('dictation')
         self.assertEqual(self.app.report['steps'][-1]['status'], 'PASSED')
