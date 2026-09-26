@@ -1,15 +1,15 @@
 {
   "installer_version": "1.1.2",
   "repository": "LionLabsCommunity/lionclawv1.0",
-  "commit": "051da4bdff2c44b43bd78a3166aa9374d1dba3b9",
-  "application_version": "3.8.0",
+  "commit": "b0907f73359f2f249613dd0671516f0657a1f1ae",
+  "application_version": "3.9.0",
   "node": "24.11.1",
   "electron": "33.4.11",
   "architecture": "x86_64",
   "sha256": {
-    "package.json": "ce508c4c475da261ba2830a6ac7f5fb1ad21ff6e24899b0fb61622ec13ec2d06",
-    "package-lock.json": "7f2be95fa1b1e548bc21ce48a2188afd2720c4cd5e3871bb11742707a65ddfeb"
+    "package.json": "c7fe98cf6cc3a6cecaafe2c76cddb7105e0e15502454c68af34cfa8c1b1ac68a",
+    "package-lock.json": "2dc5e6e17e865822f84d55370b5524cf903bb8a9b9c377f6a7f898171fbbe490"
   },
-  "validated_on": "2026-09-19",
-  "scope": "Instalação e abertura local no Omarchy. Provedores, login e instalação em máquina limpa não homologados."
+  "validated_on": "2026-09-26",
+  "scope": "Instalação, abertura pelo menu em Wayland nativo, primeiro boot (senha, SDK, chave) e ditado Voxtype em modo digitar no Omarchy. Provedores em uso prolongado e instalação em máquina limpa não homologados."
 }

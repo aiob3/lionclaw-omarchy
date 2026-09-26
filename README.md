@@ -1,6 +1,6 @@
 # LionClaw no Omarchy
 
-Guia Prático que inclui Interface TUI para acompanhamento e autorização durante o processo de implementação para reproduzir a instalação local validada do **LionClaw 3.8.0** no **Omarchy 4.0.4** homologado em Setembro de 2026.
+Guia Prático que inclui Interface TUI para acompanhamento e autorização durante o processo de implementação para reproduzir a instalação local validada do **LionClaw 3.9.0** no **Omarchy 4.0.4** homologado em Setembro de 2026.
 
 **[Abrir guia passo a passo →](https://aiob3.github.io/lionclaw-omarchy/)**
 
@@ -86,7 +86,7 @@ Electron vem do npm do projeto, não de pacman/yay. Ferramentas já presentes po
 
 ## Revisão validada e limites
 
-[manifest.json](manifest.json) fixa a revisão `051da4bdff2c44b43bd78a3166aa9374d1dba3b9`, Node `24.11.1`, Electron `33.4.11` e hashes dos manifests privados. O instalador não segue automaticamente `main` e não oferece atualização automática de versões. Uma nova revisão exige nova validação.
+[manifest.json](manifest.json) fixa a revisão `b0907f73359f2f249613dd0671516f0657a1f1ae`, Node `24.11.1`, Electron `33.4.11` e hashes dos manifests privados. O instalador não segue automaticamente `main` e não oferece atualização automática de versões. Uma nova revisão exige nova validação.
 
 [HOMOLOGACAO.md](HOMOLOGACAO.md) distingue a instalação local observada, os testes automatizados com cenários simulados e os limites ainda abertos. Não alegamos certificação oficial, instalação testada em Omarchy limpo, compatibilidade universal de hardware ou validação dos provedores.
 

@@ -2,7 +2,7 @@
 
 ## 1.1.2 — 26/09/2026
 
-**LionClaw nativo no Wayland.** O atalho do menu e o primeiro início abrem o LionClaw com `ELECTRON_OZONE_PLATFORM_HINT=wayland` e a chave oficial do app `LIONCLAW_ENABLE_HARDWARE_ACCELERATION=1`. Dois defeitos do XWayland somem juntos:
+**LionClaw 3.9.0 nativo no Wayland.** O atalho do menu e o primeiro início abrem o LionClaw com `ELECTRON_OZONE_PLATFORM_HINT=wayland` e a chave oficial do app `LIONCLAW_ENABLE_HARDWARE_ACCELERATION=1`. Dois defeitos do XWayland somem juntos:
 
 - **Ditado:** o Voxtype, no modo digitar de sempre, chega ao LionClaw como texto, e não mais como `121345672153819370-=1`.
 - **Escala:** letras e textos no tamanho certo; o `GDK_SCALE=2` do Omarchy dobrava a interface.
@@ -14,7 +14,9 @@ git pull --ff-only
 ./install.sh --step menu --target /data/lionclaw
 ```
 
-**Validação:** 40 testes aprovados. Janela nativa, tamanho e ditado confirmados pelo operador no LionClaw 3.9.0 em execução de desenvolvimento. Abertura pelo menu com a revisão fixada: não verificada nesta versão. Detalhes no [adendo da homologação](HOMOLOGACAO.md#adendo-lionclaw-nativo-no-wayland-112).
+**LionClaw 3.9.0.** A revisão fixada passa a ser `b0907f7` (3.9.0), com Node 24.11.1 e Electron 33.4.11 inalterados.
+
+**Validação:** 40 testes aprovados. Build de produção e atalho do menu executados pelo instalador; aberto pelo menu, o LionClaw rodou nativo no Wayland, com tamanho e ditado corretos confirmados pelo operador. Detalhes no [adendo da homologação](HOMOLOGACAO.md#adendo-lionclaw-nativo-no-wayland-112).
 
 ## 1.1.1 — 19/09/2026
 

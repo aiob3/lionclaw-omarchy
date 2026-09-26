@@ -131,8 +131,8 @@
       {
         "heading": "Equivalente manual",
         "text": "Use um destino novo. O helper de credencial abaixo vale apenas para essas chamadas. A revisão permanece fixa, mesmo se main avançar.",
-        "code": "git -c credential.helper= -c 'credential.helper=!gh auth git-credential' clone --filter=blob:none --no-checkout https://github.com/LionLabsCommunity/lionclawv1.0.git \"$LIONCLAW_DIR\"\ngit -c credential.helper= -c 'credential.helper=!gh auth git-credential' -C \"$LIONCLAW_DIR\" checkout --detach 051da4bdff2c44b43bd78a3166aa9374d1dba3b9\ncd \"$LIONCLAW_DIR\"\ngit rev-parse HEAD\nsha256sum package.json package-lock.json",
-        "expected": "HEAD 051da4bdff2c44b43bd78a3166aa9374d1dba3b9. Compare ambos os hashes com manifest.json do instalador.",
+        "code": "git -c credential.helper= -c 'credential.helper=!gh auth git-credential' clone --filter=blob:none --no-checkout https://github.com/LionLabsCommunity/lionclawv1.0.git \"$LIONCLAW_DIR\"\ngit -c credential.helper= -c 'credential.helper=!gh auth git-credential' -C \"$LIONCLAW_DIR\" checkout --detach b0907f73359f2f249613dd0671516f0657a1f1ae\ncd \"$LIONCLAW_DIR\"\ngit rev-parse HEAD\nsha256sum package.json package-lock.json",
+        "expected": "HEAD b0907f73359f2f249613dd0671516f0657a1f1ae. Compare ambos os hashes com manifest.json do instalador.",
         "note": "Se houver trabalho local, preserve-o e use outra pasta. O instalador não sobrescreve alterações e não concede acesso ao upstream."
       }
     ]

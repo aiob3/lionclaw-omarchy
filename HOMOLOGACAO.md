@@ -172,6 +172,23 @@ acordo: agora eles exigem que a instalação termine no menu sem tocar no Voxtyp
 `python3 -m unittest discover -s tests -q`: **40 testes, OK, exit 0** (38 anteriores
 e 2 que conferem o ambiente do launcher e do primeiro início).
 
-Limites: a confirmação visual foi feita na execução de desenvolvimento da 3.9.0.
-Build de produção, abertura pelo atalho do menu e manifest fixado na 3.9.0:
-**NÃO VERIFICADO** neste adendo; ficam para a atualização da revisão fixada.
+### Revisão fixada 3.9.0 e aceite pelo menu
+
+`manifest.json` passa a fixar `b0907f73359f2f249613dd0671516f0657a1f1ae` (3.9.0),
+com os hashes oficiais de `package.json` (`c7fe98cf…ac68a`) e `package-lock.json`
+(`2dc5e6e1…e490`).
+
+| Comando / prova | Resultado |
+|---|---|
+| `install.sh --check --target /data/lionclaw` | ambiente, pacotes, acesso, Node e revisão OK; build pendente antes da etapa seguinte |
+| `install.sh --step build --target /data/lionclaw --yes` | exit 0; main, preload e renderer; prova nativa `{"electron":"33.4.11","node":"v20.18.3","abi":"130","sqlite":"OK","keytar_load":"OK","pty":"PTY_OK"}` |
+| `install.sh --step menu --target /data/lionclaw --yes` | exit 0; launcher com `wayland` e a chave; `desktop-file-validate` aprovado |
+| Abertura pelo menu de aplicativos | janela `LionClaw` (produção), `xwayland: false`, iniciada pela sessão do usuário (`systemd --user`) |
+| Uso pelo operador | chat respondeu com ferramentas no sistema; ditado Voxtype em modo digitar correto, sem a fileira de números (confirmado pelo operador) |
+
+Nenhum arquivo versionado do repositório oficial foi alterado.
+
+Efeitos do primeiro início observados nesta revisão: cria `~/.lionclaw` (103 agentes,
+skills, persona, banco) e `~/.config/lionclaw`; o SDK recomendado pede chave de API
+da Anthropic, guardada no chaveiro do sistema; ao abrir, grava cerca de 18 servidores
+MCP em `~/.codex/config.toml`, a configuração global do Codex.
